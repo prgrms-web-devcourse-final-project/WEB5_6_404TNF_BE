@@ -3,13 +3,17 @@ package com.grepp.teamnotfound.app.model.user;
 import com.grepp.teamnotfound.app.model.auth.code.Role;
 import com.grepp.teamnotfound.app.model.auth.mail.MailService;
 import com.grepp.teamnotfound.app.model.user.dto.RegisterRequestDto;
+import com.grepp.teamnotfound.app.model.user.dto.UserDto;
+import com.grepp.teamnotfound.app.model.user.dto.UserImgDto;
 import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.user.entity.UserImg;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +29,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
 
-
+    ModelMapper modelMapper = new ModelMapper();
 
     // 요청
     @Transactional
@@ -97,4 +101,24 @@ public class UserService {
         return user.getUserId();
     }
 
+    public UserDto findByUserId(Long userId) {
+        User user = userRepository.findByUserId(userId);
+
+        if (user == null) {
+            throw new BusinessException(UserErrorCode.USER_NOT_FOUND);
+        }
+
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+
+        UserImg userImg = user.getUserImg();
+        if (userImg != null) {
+            UserImgDto userImgDto = new UserImgDto();
+            userImgDto.setUserImgId(userImg.getUserImgId());
+            userImgDto.setUrl(userImg.getSavePath() + userImg.getRenamedName());
+
+            userDto.setUserImg(userImgDto);
+        }
+
+        return userDto;
+    }
 }

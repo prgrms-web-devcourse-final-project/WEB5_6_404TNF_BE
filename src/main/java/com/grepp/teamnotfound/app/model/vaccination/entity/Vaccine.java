@@ -1,6 +1,6 @@
 package com.grepp.teamnotfound.app.model.vaccination.entity;
 
-import com.grepp.teamnotfound.app.model.vaccination.code.VaccineType;
+import com.grepp.teamnotfound.app.model.vaccination.code.VaccineName;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,7 +37,7 @@ public class Vaccine extends BaseEntity {
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private VaccineType vaccination;
+    private VaccineName name;
 
     @Column(nullable = false)
     private Integer period;

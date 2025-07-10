@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{pet.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{pet.list.headline}]]</h1>
+                <div>
+                    <a th:href="@{/pets/add}" class="btn btn-primary ms-2">[[#{pet.list.createNew}]]</a>
+                </div>
+            </div>
+            <div th:if="${pets.empty}">[[#{pet.list.empty}]]</div>
+            <div th:if="${!pets.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">[[#{pet.petId.label}]]</th>
+                            <th scope="col">[[#{pet.registNumber.label}]]</th>
+                            <th scope="col">[[#{pet.birthday.label}]]</th>
+                            <th scope="col">[[#{pet.metday.label}]]</th>
+                            <th scope="col">[[#{pet.name.label}]]</th>
+                            <th scope="col">[[#{pet.age.label}]]</th>
+                            <th scope="col">[[#{pet.breed.label}]]</th>
+                            <th scope="col">[[#{pet.size.label}]]</th>
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="pet : ${pets}">
+                            <td>[[${pet.petId}]]</td>
+                            <td>[[${pet.registNumber}]]</td>
+                            <td>[[${pet.birthday}]]</td>
+                            <td>[[${pet.metday}]]</td>
+                            <td>[[${pet.name}]]</td>
+                            <td>[[${pet.age}]]</td>
+                            <td>[[${pet.breed}]]</td>
+                            <td>[[${pet.size}]]</td>
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/pets/edit/{petId}(petId=${pet.petId})}" class="btn btn-sm btn-secondary">[[#{pet.list.edit}]]</a>
+                                    <form th:action="@{/pets/delete/{petId}(petId=${pet.petId})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{pet.list.delete}]]</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

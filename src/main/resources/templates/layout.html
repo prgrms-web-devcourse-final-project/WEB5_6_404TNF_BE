@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">[[#{app.title}]]</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link th:href="@{/webjars/bootstrap/5.3.7/css/bootstrap.min.css}" rel="stylesheet" />
+    <link th:href="@{/css/app.css}" rel="stylesheet" />
+    <script th:src="@{/webjars/bootstrap/5.3.7/js/bootstrap.bundle.min.js}" defer></script>
+    <script th:src="@{/js/app.js}" defer></script>
+</head>
+<body>
+<header class="bg-light">
+    <div class="container">
+        <nav class="navbar navbar-light navbar-expand-md">
+            <a th:href="@{/}" class="navbar-brand">
+                <img th:src="@{/images/logo.png}" th:alt="#{app.title}" width="30" height="30" class="d-inline-block align-top" />
+                <span class="ps-1">[[#{app.title}]]</span>
+            </a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarToggle"
+                    th:aria-label="#{navigation.toggle}" aria-controls="navbarToggle" aria-expanded="false">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+                <ul class="navbar-nav ms-auto">
+                    <li class="navbar-item">
+                        <a th:href="@{/}" class="nav-link">[[#{navigation.home}]]</a>
+                    </li>
+                    <li class="navbar-item dropdown">
+                        <button type="button" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" id="navbarEntitiesLink"
+                                aria-expanded="false">[[#{navigation.entities}]]</button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarEntitiesLink">
+                            <li><a th:href="@{/pets}" class="dropdown-item">[[#{pet.list.headline}]]</a></li>
+                            <li><a th:href="@{/petImgs}" class="dropdown-item">[[#{petImg.list.headline}]]</a></li>
+                            <li><a th:href="@{/vaccines}" class="dropdown-item">[[#{vaccine.list.headline}]]</a></li>
+                            <li><a th:href="@{/vaccinations}" class="dropdown-item">[[#{vaccination.list.headline}]]</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+<main class="my-5">
+    <div class="container">
+        <p th:if="${MSG_SUCCESS}" class="alert alert-success mb-4" role="alert">[[${MSG_SUCCESS}]]</p>
+        <p th:if="${MSG_INFO}" class="alert alert-info mb-4" role="alert">[[${MSG_INFO}]]</p>
+        <p th:if="${MSG_ERROR}" class="alert alert-danger mb-4" role="alert">[[${MSG_ERROR}]]</p>
+        <div layout:fragment="content" />
+    </div>
+</main>
+</body>
+</html>

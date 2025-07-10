@@ -8,9 +8,10 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum VaccinationErrorCode implements BaseErrorCode{
 
-    VACCINE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VAC_001", "존재하지 않는 예방접종입니다."),
-    VACCINE_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VAC_002", "존재하지 않는 예방접종의 유형입니다."),
-    VACCINATION_DATE_IN_FUTURE(HttpStatus.BAD_REQUEST.value(), "VAC_003", "접종 기록은 미래 일자 선택이 불가능합니다.");
+    VACCINATION_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VAC_001", "존재하지 않는 예방접종입니다."),
+    VACCINATION_TYPE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VAC_002", "존재하지 않는 예방접종의 유형입니다."),
+    VACCINATION_DATE_IN_FUTURE(HttpStatus.BAD_REQUEST.value(), "VAC_003", "접종 기록은 미래 일자 선택이 불가능합니다."),
+    VACCINE_NOT_FOUND(HttpStatus.NOT_FOUND.value(), "VAC_001", "존재하지 않는 백신입니다.");
 
     private final int status;
     private final String code;

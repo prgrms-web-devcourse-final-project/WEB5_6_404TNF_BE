@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{vaccination.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{vaccination.list.headline}]]</h1>
+                <div>
+                    <a th:href="@{/vaccinations/add}" class="btn btn-primary ms-2">[[#{vaccination.list.createNew}]]</a>
+                </div>
+            </div>
+            <div th:if="${vaccinations.empty}">[[#{vaccination.list.empty}]]</div>
+            <div th:if="${!vaccinations.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">[[#{vaccination.vaccinationId.label}]]</th>
+                            <th scope="col">[[#{vaccination.vaccineAt.label}]]</th>
+                            <th scope="col">[[#{vaccination.vaccineType.label}]]</th>
+                            <th scope="col">[[#{vaccination.count.label}]]</th>
+                            <th scope="col">[[#{vaccination.isVaccine.label}]]</th>
+                            <th scope="col">[[#{vaccination.vaccine.label}]]</th>
+                            <th scope="col">[[#{vaccination.pet.label}]]</th>
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vaccination : ${vaccinations}">
+                            <td>[[${vaccination.vaccinationId}]]</td>
+                            <td>[[${vaccination.vaccineAt}]]</td>
+                            <td>[[${vaccination.vaccineType}]]</td>
+                            <td>[[${vaccination.count}]]</td>
+                            <td>[[${vaccination.isVaccine}]]</td>
+                            <td>[[${vaccination.vaccine}]]</td>
+                            <td>[[${vaccination.pet}]]</td>
+                            <td>
+                                <div class="float-end text-nowrap">
+                                    <a th:href="@{/vaccinations/edit/{vaccinationId}(vaccinationId=${vaccination.vaccinationId})}" class="btn btn-sm btn-secondary">[[#{vaccination.list.edit}]]</a>
+                                    <form th:action="@{/vaccinations/delete/{vaccinationId}(vaccinationId=${vaccination.vaccinationId})}"
+                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
+                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{vaccination.list.delete}]]</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

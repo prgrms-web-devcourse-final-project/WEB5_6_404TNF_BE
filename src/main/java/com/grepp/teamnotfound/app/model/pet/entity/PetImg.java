@@ -1,5 +1,6 @@
 package com.grepp.teamnotfound.app.model.pet.entity;
 
+import com.grepp.teamnotfound.infra.code.ImgType;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -39,7 +40,7 @@ public class PetImg extends BaseEntity {
     private String savePath;
 
     @Column(nullable = false, length = 20)
-    private String type;
+    private ImgType type;
 
     @Column(nullable = false)
     private String originName;

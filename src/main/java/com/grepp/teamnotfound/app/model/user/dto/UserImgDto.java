@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class UserImgDto {
-
-
+    Long userImgId;
+    String url;
 
 }

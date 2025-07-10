@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{home.index.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <h1 class="mb-4">[[#{home.index.headline}]]</h1>
+            <p>[(#{home.index.text})]</p>
+            <p class="mb-5">
+                <span>[[#{home.index.swagger.text}]]</span>
+                <a th:href="@{/swagger-ui.html}" target="_blank">[[#{home.index.swagger.link}]]</a>.
+            </p>
+            <div class="col-md-4 mb-5">
+                <h4 class="mb-3">[[#{home.index.exploreEntities}]]</h4>
+                <div class="list-group">
+                    <a th:href="@{/vaccines}" class="list-group-item list-group-item-action">[[#{vaccine.list.headline}]]</a>
+                    <a th:href="@{/vaccinations}" class="list-group-item list-group-item-action">[[#{vaccination.list.headline}]]</a>
+                    <a th:href="@{/pets}" class="list-group-item list-group-item-action">[[#{pet.list.headline}]]</a>
+                    <a th:href="@{/petImgs}" class="list-group-item list-group-item-action">[[#{petImg.list.headline}]]</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

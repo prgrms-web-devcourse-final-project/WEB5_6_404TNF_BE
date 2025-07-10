@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{vaccine.list.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{vaccine.list.headline}]]</h1>
+                <div>
+                    <a th:href="@{/vaccines/add}" class="btn btn-primary ms-2">[[#{vaccine.list.createNew}]]</a>
+                </div>
+            </div>
+            <div th:if="${vaccines.empty}">[[#{vaccine.list.empty}]]</div>
+            <div th:if="${!vaccines.empty}" class="table-responsive">
+                <table class="table table-striped table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">[[#{vaccine.vaccineId.label}]]</th>
+                            <th scope="col">[[#{vaccine.name.label}]]</th>
+                            <th scope="col">[[#{vaccine.period.label}]]</th>
+                            <th scope="col">[[#{vaccine.boosterCycle.label}]]</th>
+                            <th scope="col">[[#{vaccine.boosterCount.label}]]</th>
+                            <th scope="col">[[#{vaccine.additionalCycle.label}]]</th>
+                            <th><!-- --></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="vaccine : ${vaccines}">
+                            <td>[[${vaccine.vaccineId}]]</td>
+                            <td>[[${vaccine.name}]]</td>
+                            <td>[[${vaccine.period}]]</td>
+                            <td>[[${vaccine.boosterCycle}]]</td>
+                            <td>[[${vaccine.boosterCount}]]</td>
+                            <td>[[${vaccine.additionalCycle}]]</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

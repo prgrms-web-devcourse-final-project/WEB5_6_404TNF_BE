@@ -55,7 +55,7 @@ public class Pet extends BaseEntity {
     @Column(length = 10)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Integer age;
 
     @Column(nullable = false, length = 50)

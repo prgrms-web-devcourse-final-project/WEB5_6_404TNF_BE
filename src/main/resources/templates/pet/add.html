@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+        layout:decorate="~{layout}">
+    <head>
+        <title>[[#{pet.add.headline}]]</title>
+    </head>
+    <body>
+        <div layout:fragment="content">
+            <div class="d-flex flex-wrap mb-4">
+                <h1 class="flex-grow-1">[[#{pet.add.headline}]]</h1>
+                <div>
+                    <a th:href="@{/pets}" class="btn btn-secondary">[[#{pet.add.back}]]</a>
+                </div>
+            </div>
+            <div th:replace="~{fragments/forms::globalErrors('pet')}" />
+            <form th:action="${requestUri}" method="post" novalidate="">
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='registNumber', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='birthday', required=true, inputClass='js-datepicker')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='metday', required=true, inputClass='js-datepicker')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='name')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='age', required=true, type='number')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='breed', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='size', required=true)}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='weight')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='sex', type='checkbox')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='isNeutered', type='checkbox')}" />
+                <div th:replace="~{fragments/forms::inputRow(object='pet', field='user', type='select')}" />
+                <input type="submit" th:value="#{pet.add.headline}" class="btn btn-primary mt-4" />
+            </form>
+        </div>
+    </body>
+</html>

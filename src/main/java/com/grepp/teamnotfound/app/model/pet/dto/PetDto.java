@@ -1,53 +1,59 @@
 package com.grepp.teamnotfound.app.model.pet.dto;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import com.grepp.teamnotfound.app.model.pet.code.PetSize;
+import com.grepp.teamnotfound.app.model.pet.code.PetType;
+import com.grepp.teamnotfound.app.model.pet.entity.Pet;
+import com.grepp.teamnotfound.app.model.pet.entity.PetImg;
+import com.grepp.teamnotfound.app.model.user.entity.User;
+import com.grepp.teamnotfound.app.model.vaccination.dto.VaccinationDto;
 import java.time.LocalDate;
-import lombok.Getter;
-import lombok.Setter;
+import java.util.List;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
-@Getter
-@Setter
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PetDto {
 
     private Long petId;
-
-    @NotNull
-    @Size(max = 50)
     private String registNumber;
-
-    @NotNull
     private LocalDate birthday;
-
-    @NotNull
     private LocalDate metday;
-
-    @Size(max = 10)
     private String name;
-
-    @NotNull
     private Integer age;
-
-    @NotNull
-    @Size(max = 50)
-    private String breed;
-
-    @NotNull
-    @Size(max = 10)
-    private String size;
-
+    private PetType breed;
+    private PetSize size;
     private Double weight;
-
-    @NotNull
     private Boolean sex;
-
-    @NotNull
-    @JsonProperty("isNeutered")
     private Boolean isNeutered;
-
     private Long user;
+    private PetImgDto image;
+    private List<VaccinationDto> vaccinations;
 
+    public static PetDto fromEntity(Pet pet, List<VaccinationDto> vaccinationDtos) {
+        PetDto dto = new PetDto();
+        dto.setPetId(pet.getPetId());
+        dto.setRegistNumber(pet.getRegistNumber());
+        dto.setBirthday(pet.getBirthday());
+        dto.setMetday(pet.getMetday());
+        dto.setName(pet.getName());
+        dto.setAge(pet.getAge());
+        dto.setBreed(pet.getBreed());
+        dto.setSize(pet.getSize());
+        dto.setWeight(pet.getWeight());
+        dto.setSex(pet.getSex());
+        dto.setIsNeutered(pet.getIsNeutered());
+        dto.setUser(Optional.ofNullable(pet.getUser()).map(User::getUserId).orElse(null));
+        PetImg image = pet.getPetImg();
+        dto.setImage(
+            image != null ? PetImgDto.fromEntity(image) : null
+        );
+        dto.setVaccinations(vaccinationDtos);
+
+        return dto;
+    }
 }
