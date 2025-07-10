@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,6 +38,9 @@ public class Note extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "text")
     private String content;
+
+    @Column(nullable = false)
+    private LocalDate recordedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pet_id", nullable = false)

@@ -4,6 +4,8 @@ import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleCreate
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleEditRequest;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
 import com.grepp.teamnotfound.app.model.pet.repository.PetRepository;
+import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleCreateRequestDto;
+import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleEditRequestDto;
 import com.grepp.teamnotfound.app.model.schedule.entity.Schedule;
 import com.grepp.teamnotfound.app.model.schedule.repository.ScheduleRepository;
 import com.grepp.teamnotfound.app.model.user.entity.User;
@@ -45,7 +47,7 @@ public class ScheduleService {
 
     // 일정 등록(생성)
     @Transactional
-    public void createSchedule(ScheduleCreateRequest request){
+    public void createSchedule(ScheduleCreateRequestDto request){
         // petId, userId 존재 검증
         Pet pet = petRepository.findById(request.getPetId()).orElseThrow(() -> new PetException(PetErrorCode.PET_NOT_FOUND));
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
@@ -77,7 +79,7 @@ public class ScheduleService {
 
     // 일정 수정
     @Transactional
-    public void editSchedule(ScheduleEditRequest request){
+    public void editSchedule(ScheduleEditRequestDto request){
         // petId, userId 존재 여부 검증
         Pet pet = petRepository.findById(request.getPetId()).orElseThrow(() -> new PetException(PetErrorCode.PET_NOT_FOUND));
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));

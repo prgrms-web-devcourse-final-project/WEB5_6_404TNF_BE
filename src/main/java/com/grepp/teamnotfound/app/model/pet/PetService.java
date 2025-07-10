@@ -11,6 +11,7 @@ import com.grepp.teamnotfound.app.model.vaccination.VaccinationService;
 import com.grepp.teamnotfound.app.model.vaccination.dto.VaccinationDto;
 import com.grepp.teamnotfound.app.model.vaccination.repository.VaccinationRepository;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
+import com.grepp.teamnotfound.infra.error.exception.PetException;
 import com.grepp.teamnotfound.infra.error.exception.code.PetErrorCode;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
 import com.grepp.teamnotfound.util.NotFoundException;
@@ -37,6 +38,12 @@ public class PetService {
     private final VaccinationService vaccinationService;
 
     ModelMapper modelMapper = new ModelMapper();
+
+    @Transactional
+    public Pet getPet(Long petId){
+        return petRepository.findById(petId)
+                .orElseThrow(() -> new PetException(PetErrorCode.PET_NOT_FOUND));
+    }
 
     public List<PetDto> findAll() {
         List<Pet> pets = petRepository.findAll();

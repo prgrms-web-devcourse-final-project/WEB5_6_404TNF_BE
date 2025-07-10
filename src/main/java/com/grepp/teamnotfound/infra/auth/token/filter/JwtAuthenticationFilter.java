@@ -40,6 +40,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+
+        // OPTIONS(프리플라이트) 요청은 필터를 타지 않도록 처리
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         return requestMatcherHolder.getRequestMatchersByMinRole(null).matches(request);
     }
 

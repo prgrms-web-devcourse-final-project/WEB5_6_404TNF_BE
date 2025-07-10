@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
@@ -68,6 +69,7 @@ public class SecurityConfig {
 
                                 //.requestMatchers(GET, "/**").permitAll()
                                 //.requestMatchers(GET, "/swagger-ui", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll() // 프리플라이트 허용
                                 .anyRequest().authenticated()
                 )
 
@@ -86,11 +88,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOriginPatterns(Collections.singletonList(
+        corsConfig.setAllowedOriginPatterns(Arrays.asList(
                 // TODO 프론트 서버로 수정 필요
-                "http://localhost:8081"
+                "http://localhost:3000",
+                "https://mungnote-172598302113.asia-northeast3.run.app"
         ));
-
         corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         corsConfig.setAllowedHeaders(Collections.singletonList("*"));
         corsConfig.setAllowCredentials(true);

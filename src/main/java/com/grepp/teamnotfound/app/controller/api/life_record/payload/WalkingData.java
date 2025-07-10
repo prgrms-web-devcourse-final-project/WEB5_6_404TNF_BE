@@ -1,27 +1,21 @@
-package com.grepp.teamnotfound.app.model.structured_data.dto;
+package com.grepp.teamnotfound.app.controller.api.life_record.payload;
 
-import com.grepp.teamnotfound.app.model.pet.entity.Pet;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
-@Data
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
+@Getter
 @Builder
-public class WalkingDto {
+public class WalkingData {
 
     private Long walkingId;
-
     private OffsetDateTime startedAt;
-
     private OffsetDateTime endedAt;
-
     private Integer pace;
-
     private LocalDate recordedAt;
-
-    private Pet pet;
-
-    private OffsetDateTime createdAt = OffsetDateTime.now();
 
 }

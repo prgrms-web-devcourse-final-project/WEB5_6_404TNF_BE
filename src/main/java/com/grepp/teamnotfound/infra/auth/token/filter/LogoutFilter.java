@@ -82,4 +82,10 @@ public class LogoutFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         objectMapper.writeValue(response.getWriter(), ApiResponse.error(errorCode.getCode(), message));
     }
+
+    // swagger 프리플라이트 방지
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    }
 }

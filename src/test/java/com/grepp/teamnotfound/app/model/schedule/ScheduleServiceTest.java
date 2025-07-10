@@ -3,6 +3,8 @@ package com.grepp.teamnotfound.app.model.schedule;
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleCreateRequest;
 import com.grepp.teamnotfound.app.controller.api.schedule.payload.ScheduleEditRequest;
 import com.grepp.teamnotfound.app.model.schedule.code.ScheduleCycle;
+import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleCreateRequestDto;
+import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleEditRequestDto;
 import com.grepp.teamnotfound.app.model.schedule.entity.Schedule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +31,7 @@ class ScheduleServiceTest {
     // 반복 없는 일정 등록
     @Test
     void createSchedule() {
-        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
+        ScheduleCreateRequestDto request = ScheduleCreateRequestDto.builder()
                 .userId(1L)
                 .petId(1L)
                 .name("병원가는 날")
@@ -41,7 +43,7 @@ class ScheduleServiceTest {
     // 반복 있는 일정 등록
     @Test
     void createCycleSchedule() {
-        ScheduleCreateRequest request = ScheduleCreateRequest.builder()
+        ScheduleCreateRequestDto request = ScheduleCreateRequestDto.builder()
                 .userId(1L)
                 .petId(1L)
                 .name("목욕하는 날")
@@ -54,7 +56,7 @@ class ScheduleServiceTest {
     // 반복 없는 일정 수정
     @Test
     void editSchedule() {
-        ScheduleEditRequest request = ScheduleEditRequest.builder()
+        ScheduleEditRequestDto request = ScheduleEditRequestDto.builder()
                 .petId(1L).userId(1L).scheduleId(10025L)
                 .date(LocalDate.now().plusDays(2))
                 .name("병원가는날 수정")
@@ -66,7 +68,7 @@ class ScheduleServiceTest {
     // 반복 있는 일정 수정
     @Test
     void editCycleSchedule() {
-        ScheduleEditRequest request = ScheduleEditRequest.builder()
+        ScheduleEditRequestDto request = ScheduleEditRequestDto.builder()
                 .petId(1L).userId(1L).scheduleId(10014L)
                 .date(LocalDate.now().plusDays(2))
                 .name("목욕하는 날 수정")
