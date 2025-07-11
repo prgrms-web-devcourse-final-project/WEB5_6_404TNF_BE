@@ -1,10 +1,8 @@
 package com.grepp.teamnotfound.app.controller.api.life_record.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -12,10 +10,8 @@ import lombok.Getter;
 @Builder
 public class WalkingData {
 
-    private Long walkingId;
-    private OffsetDateTime startedAt;
-    private OffsetDateTime endedAt;
+    private OffsetDateTime startTime;
+    private OffsetDateTime endTime;
     private Integer pace;
-    private LocalDate recordedAt;
 
 }

@@ -6,11 +6,17 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 
 public interface WalkingRepository extends JpaRepository<Walking, Long> {
 
-    List<Walking> findAllByPetAndRecordedAt(Pet pet, LocalDate recordedAt);
+    @Query("SELECT w FROM Walking w WHERE w.pet.petId = :petId AND w.recordedAt = :recordedAt AND w.deletedAt IS NULL")
+    List<Walking> findWalkingList(Long petId, LocalDate recordedAt);
 
-    Optional<Walking> findByWalkingId(Long walkingId);
+    @Modifying(clearAutomatically=true, flushAutomatically=true)
+    @Query("UPDATE Walking w SET w.deletedAt = CURRENT_TIMESTAMP WHERE w.pet.petId = :petId AND w.recordedAt = :recordedAt AND w.deletedAt IS NULL")
+    void delete(Long petId, LocalDate recordedAt);
+
 }

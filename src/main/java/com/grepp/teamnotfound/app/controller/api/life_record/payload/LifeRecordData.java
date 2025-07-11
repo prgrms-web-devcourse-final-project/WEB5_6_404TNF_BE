@@ -10,13 +10,11 @@ public class LifeRecordData {
     private Long petId;
     private LocalDate recordAt;
 
-    // 관찰노트
-    private NoteData note;
+    private String content;
 
-    // 수면시간
-    private SleepingData sleepTime;
-    // 몸무게
-    private WeightData weight;
+    private Integer sleepTime;
+
+    private Double weight;
 
     // 산책
     private List<WalkingData> walkingList;

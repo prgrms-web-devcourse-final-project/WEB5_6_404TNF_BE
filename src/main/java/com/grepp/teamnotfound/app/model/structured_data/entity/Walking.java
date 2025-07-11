@@ -39,10 +39,10 @@ public class Walking extends BaseEntity {
     private Long walkingId;
 
     @Column(nullable = false)
-    private OffsetDateTime startedAt;
+    private OffsetDateTime startTime;
 
     @Column(nullable = false)
-    private OffsetDateTime endedAt;
+    private OffsetDateTime endTime;
 
     @Column(nullable = false)
     private Integer pace;
