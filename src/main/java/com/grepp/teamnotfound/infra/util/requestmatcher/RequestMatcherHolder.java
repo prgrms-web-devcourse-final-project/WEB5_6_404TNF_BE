@@ -28,11 +28,17 @@ public class RequestMatcherHolder {
             new RequestInfo(null, "/error", null),
             new RequestInfo(null, "/favicon.ico", null),
 
-            // 2. auth 로그인/회원가입
-            new RequestInfo(POST, "/api/auth/v1/register/**", null),
+            // 2. auth 로그인
             new RequestInfo(POST,"/api/auth/v1/login", null),
-            new RequestInfo(POST, "/api/auth/v1/admin/register", null),
             new RequestInfo(POST, "/api/auth/v1/admin/login", null),
+
+            // 3. auth 회원가입
+            new RequestInfo(POST, "/api/auth/v1/register", null),
+            new RequestInfo(POST, "/api/auth/v1/admin/register", null),
+            new RequestInfo(GET, "/api/auth/v1/check-nickname", null),
+            new RequestInfo(GET, "/api/auth/v1/check-email", null),
+            new RequestInfo(POST, "/api/auth/v1/email-verifications", null),
+            new RequestInfo(POST, "/api/auth/v1/email-verifications/verify", null),
 
             // 3. admin
             new RequestInfo(null, "/api/admin/**", "ADMIN"),

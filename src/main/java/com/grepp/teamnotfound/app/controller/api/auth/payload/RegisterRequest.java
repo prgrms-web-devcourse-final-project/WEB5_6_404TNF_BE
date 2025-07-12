@@ -1,16 +1,12 @@
-package com.grepp.teamnotfound.app.model.user.dto;
+package com.grepp.teamnotfound.app.controller.api.auth.payload;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequestDto {
+public class RegisterRequest {
 
     private String email;
     private String name;

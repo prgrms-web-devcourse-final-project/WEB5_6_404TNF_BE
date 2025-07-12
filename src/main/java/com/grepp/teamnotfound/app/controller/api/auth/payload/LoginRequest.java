@@ -1,4 +1,4 @@
-package com.grepp.teamnotfound.app.model.auth.payload;
+package com.grepp.teamnotfound.app.controller.api.auth.payload;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -11,6 +11,6 @@ public class LoginRequest {
     private String email;
 
     @NotBlank
-    @Size(min = 6, max = 20)
+    @Size(min = 8, max = 20)
     private String password;
 }

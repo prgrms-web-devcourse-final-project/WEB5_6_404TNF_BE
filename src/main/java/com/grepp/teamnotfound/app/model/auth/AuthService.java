@@ -1,6 +1,6 @@
 package com.grepp.teamnotfound.app.model.auth;
 
-import com.grepp.teamnotfound.app.model.auth.payload.LoginRequest;
+import com.grepp.teamnotfound.app.model.auth.payload.LoginCommand;
 import com.grepp.teamnotfound.app.model.auth.token.RefreshTokenService;
 import com.grepp.teamnotfound.app.model.auth.token.dto.AccessTokenDto;
 import com.grepp.teamnotfound.app.model.auth.token.dto.TokenDto;
@@ -30,10 +30,11 @@ public class AuthService {
     private final UserBlackListRepository userBlackListRepository;
 
 
-    public TokenDto login(LoginRequest loginRequest) {
+    // TODO 인증 기준 email -> userId ref 수정의 시작점
+    public TokenDto login(LoginCommand request) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),
-                        loginRequest.getPassword());
+                new UsernamePasswordAuthenticationToken(request.getEmail(),
+                        request.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);

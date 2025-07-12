@@ -1,4 +1,4 @@
-package com.grepp.teamnotfound.app.model.auth.payload;
+package com.grepp.teamnotfound.app.controller.api.auth.payload;
 
 import com.grepp.teamnotfound.infra.auth.token.code.GrantType;
 import lombok.Builder;

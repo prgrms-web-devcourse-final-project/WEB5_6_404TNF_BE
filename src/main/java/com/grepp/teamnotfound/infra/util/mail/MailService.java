@@ -1,8 +1,8 @@
-package com.grepp.teamnotfound.app.model.auth.mail;
+package com.grepp.teamnotfound.infra.util.mail;
 
 import com.grepp.teamnotfound.infra.error.exception.AuthException;
+import com.grepp.teamnotfound.infra.error.exception.CommonException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
-import com.grepp.teamnotfound.infra.util.mail.VerifyCodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,11 +27,16 @@ public class MailService {
     private long expirationSeconds;
 
 
-    // 회원가입 인증 메일 발송
     public void sendVerificationEmail(String toEmail){
         String verifyCode = VerifyCodeGenerator.generateCode();
         String subject = "[🐶멍멍일지] 회원가입 인증 코드입니다.";
         String text = "인증 코드: " + verifyCode + "\n " + (expirationSeconds/60) + "분 이내에 인증코드를 인증 란에 입력해주세요.";
+
+        stringRedisTemplate.opsForValue().set(
+                "email: verifying " + toEmail,
+                verifyCode,
+                Duration.ofSeconds(expirationSeconds)
+        );
 
         try{
             SimpleMailMessage message = new SimpleMailMessage();
@@ -41,30 +46,21 @@ public class MailService {
             message.setText(text);
             mailSender.send(message);
 
-            // redis에 인증코드 저장
-            stringRedisTemplate.opsForValue().set(
-                    "email: verifying " + toEmail,
-                    verifyCode,
-                    Duration.ofSeconds(expirationSeconds)
-            );
-
         } catch (MailException e) {
-            throw new AuthException(UserErrorCode.EMAIL_VERIFICATION_SEND_FAILED);
+            stringRedisTemplate.delete("email: verifying " + toEmail);
+            // MailException은 복구 안 되는 오류니, 그냥 Runtime으로 둠
+            throw new CommonException(UserErrorCode.EMAIL_VERIFICATION_SEND_FAILED);
         }
     }
 
 
-    // 회원가입 인증 메일 코드 검증
     public void verifyEmailCode(String email, String code){
         String redisKey = "email: verifying " + email;
         String storedCode = stringRedisTemplate.opsForValue().get(redisKey);
-
-        // 코드 없음 또는 코드 만료
         if (storedCode == null || !storedCode.equals(code)) {
+            // 유저의 입력 오류에 따른 예외니, 그냥 Runtime으로 둠
             throw new AuthException(UserErrorCode.EMAIL_VERIFICATION_FAILED);
         }
-
-        // redis 코드 삭제
         stringRedisTemplate.delete(redisKey);
     }
 }
