@@ -15,7 +15,7 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     Pet findFirstByUser(User user);
     List<Pet> findAllByUser(User user);
 
-    @Modifying
+    @Modifying(clearAutomatically=true, flushAutomatically=true)
     @Query("UPDATE Pet p SET p.deletedAt = :deletedAt WHERE p.petId = :petId")
     void softDelete(@Param("petId") Long petId, @Param("deletedAt") OffsetDateTime deletedAt);
 

@@ -1,18 +1,26 @@
 package com.grepp.teamnotfound.app.model.vaccination;
 
 
-import com.grepp.teamnotfound.app.controller.api.mypage.payload.VaccinatedItem;
+import com.grepp.teamnotfound.app.controller.api.mypage.payload.VaccineWriteRequest;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
+import com.grepp.teamnotfound.app.model.pet.repository.PetRepository;
+import com.grepp.teamnotfound.app.model.vaccination.code.VaccineName;
+import com.grepp.teamnotfound.app.model.vaccination.code.VaccineType;
 import com.grepp.teamnotfound.app.model.vaccination.dto.VaccinationDto;
 import com.grepp.teamnotfound.app.model.vaccination.entity.Vaccination;
 import com.grepp.teamnotfound.app.model.vaccination.entity.Vaccine;
 import com.grepp.teamnotfound.app.model.vaccination.repository.VaccinationRepository;
 import com.grepp.teamnotfound.app.model.vaccination.repository.VaccineRepository;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
+import com.grepp.teamnotfound.infra.error.exception.PetException;
+import com.grepp.teamnotfound.infra.error.exception.code.PetErrorCode;
 import com.grepp.teamnotfound.infra.error.exception.code.VaccinationErrorCode;
-import com.grepp.teamnotfound.util.NotFoundException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -28,9 +36,13 @@ public class VaccinationService {
 
     private final VaccinationRepository vaccinationRepository;
     private final VaccineRepository vaccineRepository;
+    private final PetRepository petRepository;
 
     ModelMapper modelMapper = new ModelMapper();
 
+    /**
+     * 조회
+     */
     public List<VaccinationDto> findAll() {
         List<Vaccination> vaccinations = vaccinationRepository.findAll();
 
@@ -39,12 +51,18 @@ public class VaccinationService {
             .toList();
     }
 
-    public VaccinationDto get(Long vaccinationId) {
-        return vaccinationRepository.findById(vaccinationId)
-            .map(VaccinationDto::fromEntity)
-            .orElseThrow(NotFoundException::new);
+    public List<VaccinationDto> findPetVaccination(Long petId) {
+        Pet pet = petRepository.findById(petId)
+            .orElseThrow(() -> new PetException(PetErrorCode.PET_NOT_FOUND));
+
+        List<Vaccination> vaccinations = vaccinationRepository.findByPet(pet.getPetId());
+        return vaccinations.stream().map(VaccinationDto::fromEntity).toList();
     }
 
+
+    /**
+     * 생성 및 수정
+     */
     @Transactional
     public Long create(VaccinationDto vaccinationDTO) {
         Vaccination vaccination = modelMapper.map(vaccinationDTO, Vaccination.class);
@@ -53,31 +71,70 @@ public class VaccinationService {
 
         return vaccination.getVaccinationId();
     }
+
     @Transactional
-    public void savePetVaccinations(Pet pet, List<? extends VaccinatedItem> vaccinatedItems) {
-        if (vaccinatedItems == null || vaccinatedItems.isEmpty()) {
+    public void savePetVaccinations(Long petId, List<VaccineWriteRequest> requests) {
+        if (requests == null || requests.isEmpty()) {
             return;
         }
 
-        for (VaccinatedItem item : vaccinatedItems) {
-            Vaccination vaccination = modelMapper.map(item, Vaccination.class);
-            vaccination.setPet(pet);
+        Pet pet = petRepository.findById(petId)
+            .orElseThrow(() -> new PetException(PetErrorCode.PET_NOT_FOUND));
 
-            Vaccine vaccine = vaccineRepository.findById(item.getVaccineId())
+        // 1. 기존 반려건의 예방접종 기록 가져오기
+        List<Vaccination> existing = vaccinationRepository.findByPet(pet.getPetId());
+        Map<VaccineName, Vaccination> existingMap = existing.stream().collect(Collectors.toMap(v -> v.getVaccine().getName(), v -> v));
+
+        // 2. 기록된 예방접종의 백신 이름을 리스트로 만들기
+        Set<VaccineName> requestedNames = requests.stream()
+            .map(VaccineWriteRequest::getName)
+            .collect(Collectors.toSet());
+
+        // 3. 새 요청에 없는 백신은 기존 예방접종 기록에서 삭제 (soft-delete)
+        for (Vaccination v : existing) {
+            if (!requestedNames.contains(v.getVaccine().getName())) {
+                vaccinationRepository.softDeleteOne(v.getVaccinationId(), OffsetDateTime.now());
+            }
+        }
+
+        // 4. 요청 백신을 모두 다시 저장 또는 업데이트
+        for (VaccineWriteRequest dto : requests) {
+            Vaccine vaccine = vaccineRepository.findByName(dto.getName())
                 .orElseThrow(() -> new BusinessException(VaccinationErrorCode.VACCINE_NOT_FOUND));
-            vaccination.setVaccine(vaccine);
 
-            vaccinationRepository.save(vaccination);
+            Integer boosterCount = vaccine.getBoosterCount();
+
+            if (
+                (dto.getVaccineType() == VaccineType.FIRST && dto.getCount() != 1) ||
+                    (dto.getVaccineType() == VaccineType.BOOSTER && (dto.getCount() <= 1 || dto.getCount() > boosterCount + 1))
+            ) {
+                throw new BusinessException(VaccinationErrorCode.VACCINATION_COUNT_MISMATCH);
+            }
+
+            if (dto.getVaccineAt().isAfter(LocalDate.now())) {
+                throw new BusinessException(VaccinationErrorCode.VACCINATION_COUNT_MISMATCH);
+            }
+
+            Vaccination vaccination = existingMap.get(dto.getName());
+            if (vaccination != null) {
+                // 존재하면 수정
+                modelMapper.map(dto, vaccination);
+                vaccination.setUpdatedAt(OffsetDateTime.now());
+            } else {
+                // 존재하지 않으면 새로 생성
+                Vaccination newVaccination = modelMapper.map(dto, Vaccination.class);
+                newVaccination.setVaccine(vaccine);
+                newVaccination.setPet(pet);
+                vaccinationRepository.save(newVaccination);
+            }
         }
     }
 
-    @Transactional
-    public void delete(Long vaccinationId) {
-        vaccinationRepository.deleteById(vaccinationId);
-    }
+    /**
+     * 삭제
+     */
     @Transactional
     public void softDelete(Long petId) {
-        vaccinationRepository.softDelete(petId, OffsetDateTime.now());
+        vaccinationRepository.softDeleteAll(petId, OffsetDateTime.now());
     }
-
 }

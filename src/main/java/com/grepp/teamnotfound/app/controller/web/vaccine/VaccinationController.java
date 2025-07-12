@@ -19,7 +19,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -79,15 +78,6 @@ public class VaccinationController {
         vaccinationService.create(vaccinationDTO);
         redirectAttributes.addFlashAttribute(WebUtils.MSG_SUCCESS, WebUtils.getMessage("vaccination.create.success"));
         return "redirect:/vaccinations";
-    }
-
-    @GetMapping("/edit/{vaccinationId}")
-    public String edit(
-        @PathVariable(name = "vaccinationId") Long vaccinationId,
-        Model model
-    ) {
-        model.addAttribute("vaccination", vaccinationService.get(vaccinationId));
-        return "vaccination/edit";
     }
 
 }

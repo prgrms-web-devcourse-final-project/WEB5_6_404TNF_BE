@@ -36,15 +36,6 @@
                             <td>[[${vaccination.isVaccine}]]</td>
                             <td>[[${vaccination.vaccine}]]</td>
                             <td>[[${vaccination.pet}]]</td>
-                            <td>
-                                <div class="float-end text-nowrap">
-                                    <a th:href="@{/vaccinations/edit/{vaccinationId}(vaccinationId=${vaccination.vaccinationId})}" class="btn btn-sm btn-secondary">[[#{vaccination.list.edit}]]</a>
-                                    <form th:action="@{/vaccinations/delete/{vaccinationId}(vaccinationId=${vaccination.vaccinationId})}"
-                                            th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
-                                        <button type="submit" class="btn btn-sm btn-secondary">[[#{vaccination.list.delete}]]</button>
-                                    </form>
-                                </div>
-                            </td>
                         </tr>
                     </tbody>
                 </table>

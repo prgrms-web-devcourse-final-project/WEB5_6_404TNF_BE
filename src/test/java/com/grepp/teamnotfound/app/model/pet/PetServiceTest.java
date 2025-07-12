@@ -33,13 +33,6 @@ class PetServiceTest {
     }
 
     @Test
-    void testFindByUserId() {
-        List<PetDto> result = petService.findByUserId(1L);
-
-        result.forEach(p -> System.out.println("PetDTO" + p));
-    }
-
-    @Test
     void testFindOne() {
         PetDto result = petService.findOne(1L);
 

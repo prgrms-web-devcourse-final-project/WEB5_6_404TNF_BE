@@ -19,7 +19,6 @@ public class VaccinationDto {
     private LocalDate vaccineAt;
     private VaccineType vaccineType;
     private Integer count;
-    private Boolean isVaccine;
     private Vaccine vaccine;
 
     public static VaccinationDto fromEntity(Vaccination vaccination) {
@@ -33,7 +32,6 @@ public class VaccinationDto {
             vaccination.getVaccineAt(),
             vaccination.getVaccineType(),
             vaccination.getCount(),
-            vaccination.getIsVaccine(),
             vaccination.getVaccine()
         );
     }

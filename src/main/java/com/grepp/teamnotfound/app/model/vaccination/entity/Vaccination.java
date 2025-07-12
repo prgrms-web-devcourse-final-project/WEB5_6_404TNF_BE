@@ -3,7 +3,6 @@ package com.grepp.teamnotfound.app.model.vaccination.entity;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
 import com.grepp.teamnotfound.app.model.vaccination.code.VaccineType;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -50,9 +49,6 @@ public class Vaccination extends BaseEntity {
 
     @Column(nullable = false)
     private Integer count;
-
-    @Column(nullable = false)
-    private Boolean isVaccine;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "vaccine_id", nullable = false)
