@@ -18,4 +18,7 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     @Query("UPDATE Pet p SET p.deletedAt = :deletedAt WHERE p.petId = :petId")
     Integer softDelete(@Param("petId") Long petId, @Param("deletedAt") OffsetDateTime deletedAt);
 
+    @Query("SELECT p FROM Pet p WHERE p.user.userId = :userId AND p.deletedAt IS NULL")
+    List<Pet> findPetIdsByUserId(@Param("userId") Long userId);
+
 }

@@ -2,8 +2,10 @@ package com.grepp.teamnotfound.app.model.life_record;
 
 import com.grepp.teamnotfound.app.controller.api.life_record.payload.FeedingData;
 import com.grepp.teamnotfound.app.controller.api.life_record.payload.LifeRecordData;
+import com.grepp.teamnotfound.app.controller.api.life_record.payload.LifeRecordListRequest;
 import com.grepp.teamnotfound.app.controller.api.life_record.payload.WalkingData;
 import com.grepp.teamnotfound.app.model.life_record.dto.LifeRecordDto;
+import com.grepp.teamnotfound.app.model.life_record.dto.LifeRecordListDto;
 import com.grepp.teamnotfound.app.model.life_record.entity.LifeRecord;
 import com.grepp.teamnotfound.app.model.life_record.repository.LifeRecordRepository;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
@@ -21,6 +23,8 @@ import java.time.OffsetDateTime;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -129,6 +133,12 @@ public class LifeRecordService {
         feedingService.deleteFeedingList(lifeRecordId);
     }
 
+    // 생활기록 리스트 조회
+    @Transactional(readOnly = true)
+    public Page<LifeRecordListDto> searchLifeRecords(Long userId, LifeRecordListRequest request, Pageable pageable) {
+        return lifeRecordRepository.search(userId, request, pageable);
+    } 
+  
     public List<LifeRecord> getSleepingLifeRecordList(Pet pet, LocalDate date){
         return lifeRecordRepository.findTop10ByPetAndDeletedAtNullAndRecordedAtBeforeAndSleepingTimeIsNotNullOrderByRecordedAtDesc(pet, date);
 

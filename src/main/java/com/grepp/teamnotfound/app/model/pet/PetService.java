@@ -18,6 +18,7 @@ import java.time.OffsetDateTime;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -132,5 +133,14 @@ public class PetService {
         }
         Period period = Period.between(birthday, LocalDate.now());
         return period.getYears() * 12 + period.getMonths();
+    }
+
+    // 유저의 <petId, name> 리스트 조회
+    @Transactional(readOnly = true)
+    public List<Map<Long, String>> findPetListByUserId(Long userId){
+        List<Pet> petList = petRepository.findPetIdsByUserId(userId);
+
+        return petList.stream().map(pet ->
+                Map.of(pet.getPetId(), pet.getName())).toList();
     }
 }

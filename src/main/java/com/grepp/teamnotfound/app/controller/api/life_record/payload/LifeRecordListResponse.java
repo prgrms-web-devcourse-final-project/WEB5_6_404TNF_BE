@@ -1,20 +1,16 @@
 package com.grepp.teamnotfound.app.controller.api.life_record.payload;
 
-import java.time.OffsetDateTime;
+import com.grepp.teamnotfound.app.controller.api.article.payload.PageInfo;
+import com.grepp.teamnotfound.app.model.life_record.dto.LifeRecordListDto;
+import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
-@Builder
+@Data
 @AllArgsConstructor
 public class LifeRecordListResponse {
 
-    private Long noteId;
-    private String name;
-    private String savePath;
-    private Float weight;
-    private String content;
-    private OffsetDateTime createdAt;
+    private List<LifeRecordListDto> data;
+    private PageInfo pageInfo;
 
 }

@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface LifeRecordRepository extends JpaRepository<LifeRecord, Long> {
+public interface LifeRecordRepository extends JpaRepository<LifeRecord, Long>, LifeRecordRepositoryCustom {
 
     @Query("SELECT l FROM LifeRecord l WHERE l.lifeRecordId = :lifeRecordId AND l.deletedAt IS NULL")
     Optional<LifeRecord> findByLifeRecordId(@Param("lifeRecordId") Long lifeRecordId);
