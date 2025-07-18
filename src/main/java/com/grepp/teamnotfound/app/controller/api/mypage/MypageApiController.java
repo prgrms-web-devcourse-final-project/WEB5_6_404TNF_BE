@@ -8,13 +8,13 @@ import com.grepp.teamnotfound.app.model.auth.domain.Principal;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import com.grepp.teamnotfound.app.model.user.UserService;
-import com.grepp.teamnotfound.app.model.user.dto.UserDto;
 import com.grepp.teamnotfound.app.model.vaccination.VaccinationService;
 import com.grepp.teamnotfound.app.model.vaccination.dto.VaccinationDto;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -43,7 +45,7 @@ public class MypageApiController {
      **/
     @GetMapping("/v1/me")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<UserDto> getUser(
+    public ResponseEntity<?> getUser(
         @AuthenticationPrincipal Principal principal
     ) {
         Long userId = principal.getUserId();
@@ -53,7 +55,7 @@ public class MypageApiController {
 
     @GetMapping("/v1/pets")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<ProfilePetResponse>> getUserPets(
+    public ResponseEntity<List<?>> getUserPets(
         @AuthenticationPrincipal Principal principal
     ) {
         Long userId = principal.getUserId();
@@ -66,15 +68,16 @@ public class MypageApiController {
      * 펫 관련 API
      **/
 
-    @PostMapping("/v2/pets")
+    @PostMapping(value = "/v2/pets", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createPet(
-        @RequestBody @Valid PetWriteRequest request,
+        @RequestPart("request") PetWriteRequest request,
+        @RequestPart(value = "images", required = false) List<MultipartFile> images,
         @AuthenticationPrincipal Principal principal
     ) {
         Long userId = principal.getUserId();
 
-        return ResponseEntity.ok(petService.create(userId, request));
+        return ResponseEntity.ok(petService.create(userId, request, images));
     }
 
     @GetMapping("/v1/pets/{petId}")
@@ -86,13 +89,14 @@ public class MypageApiController {
         return ResponseEntity.ok(petDto);
     }
 
-    @PutMapping("/v2/pets/{petId}")
+    @PutMapping(value = "/v2/pets/{petId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> updatePet(
         @PathVariable(name = "petId") Long petId,
-        @RequestBody @Valid PetWriteRequest request
+        @RequestPart("request") PetWriteRequest request,
+        @RequestPart(value = "images", required = false) List<MultipartFile> images
     ) {
-        return ResponseEntity.ok(petService.update(petId, request));
+        return ResponseEntity.ok(petService.update(petId, request, images));
     }
 
     @DeleteMapping("/v2/pets/{petId}")

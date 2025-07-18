@@ -22,7 +22,6 @@
                             <th scope="col">[[#{pet.birthday.label}]]</th>
                             <th scope="col">[[#{pet.metday.label}]]</th>
                             <th scope="col">[[#{pet.name.label}]]</th>
-                            <th scope="col">[[#{pet.age.label}]]</th>
                             <th scope="col">[[#{pet.breed.label}]]</th>
                             <th scope="col">[[#{pet.size.label}]]</th>
                             <th><!-- --></th>
@@ -35,12 +34,10 @@
                             <td>[[${pet.birthday}]]</td>
                             <td>[[${pet.metday}]]</td>
                             <td>[[${pet.name}]]</td>
-                            <td>[[${pet.age}]]</td>
                             <td>[[${pet.breed}]]</td>
                             <td>[[${pet.size}]]</td>
                             <td>
                                 <div class="float-end text-nowrap">
-                                    <a th:href="@{/pets/edit/{petId}(petId=${pet.petId})}" class="btn btn-sm btn-secondary">[[#{pet.list.edit}]]</a>
                                     <form th:action="@{/pets/delete/{petId}(petId=${pet.petId})}"
                                             th:data-confirm-message="#{delete.confirm}" method="post" class="js-submit-confirm d-inline">
                                         <button type="submit" class="btn btn-sm btn-secondary">[[#{pet.list.delete}]]</button>

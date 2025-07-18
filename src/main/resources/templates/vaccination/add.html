@@ -17,7 +17,6 @@
                 <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='vaccineAt', required=true)}" />
                 <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='vaccineType', required=true)}" />
                 <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='count', required=true, type='number')}" />
-                <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='isVaccine', type='checkbox')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='vaccine', required=true, type='select')}" />
                 <div th:replace="~{fragments/forms::inputRow(object='vaccination', field='pet', required=true, type='select')}" />
                 <input type="submit" th:value="#{vaccination.add.headline}" class="btn btn-primary mt-4" />

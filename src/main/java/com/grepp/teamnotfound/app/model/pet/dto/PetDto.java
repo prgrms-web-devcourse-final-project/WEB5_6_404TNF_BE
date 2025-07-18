@@ -3,7 +3,6 @@ package com.grepp.teamnotfound.app.model.pet.dto;
 import com.grepp.teamnotfound.app.model.pet.code.PetSize;
 import com.grepp.teamnotfound.app.model.pet.code.PetType;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
-import com.grepp.teamnotfound.app.model.pet.entity.PetImg;
 import com.grepp.teamnotfound.app.model.user.entity.User;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -30,7 +29,7 @@ public class PetDto {
     private Boolean sex;
     private Boolean isNeutered;
     private Long user;
-    private PetImgDto image;
+    private String imgUrl;
 
     public static PetDto fromEntity(Pet pet) {
         PetDto dto = new PetDto();
@@ -45,10 +44,6 @@ public class PetDto {
         dto.setSex(pet.getSex());
         dto.setIsNeutered(pet.getIsNeutered());
         dto.setUser(Optional.ofNullable(pet.getUser()).map(User::getUserId).orElse(null));
-        PetImg image = pet.getPetImg();
-        dto.setImage(
-            image != null ? PetImgDto.fromEntity(image) : null
-        );
 
         return dto;
     }

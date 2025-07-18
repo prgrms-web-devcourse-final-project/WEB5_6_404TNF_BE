@@ -46,8 +46,8 @@ public class VaccinationService {
             VaccineName.DHPPL, 5,
             VaccineName.CORONAVIRUS, 2,
             VaccineName.KENNEL_COUGH, 2,
-            VaccineName.RABIES, 2,
-            VaccineName.INFLUENZA, 1
+            VaccineName.RABIES, 1,
+            VaccineName.INFLUENZA, 2
         ));
 
     /**
@@ -114,7 +114,7 @@ public class VaccinationService {
 
             VaccineName name = dto.getName();
             VaccineType type = dto.getVaccineType();
-            Integer count = dto.getCount();
+            Integer count = type == VaccineType.ADDITIONAL ? null : dto.getCount();
             Integer expectedBooster = boosterCountMap.getOrDefault(name, -1);
 
             switch (type) {
@@ -123,7 +123,7 @@ public class VaccinationService {
                     break;
 
                 case BOOSTER:
-                    if (name.equals(VaccineName.INFLUENZA)) {
+                    if (name.equals(VaccineName.RABIES)) {
                         if (count != 1) {
                             throw new BusinessException(VaccinationErrorCode.VACCINATION_COUNT_MISMATCH);
                         }
@@ -135,7 +135,6 @@ public class VaccinationService {
                     break;
 
                 case ADDITIONAL:
-                    if (count <= expectedBooster) throw new BusinessException(VaccinationErrorCode.VACCINATION_COUNT_MISMATCH);
                     break;
 
                 default:

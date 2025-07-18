@@ -36,9 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### properties ###
-**/src/main/resources/*.properties
-
 # ds store
 .DS_Store
 ._.DS_Store

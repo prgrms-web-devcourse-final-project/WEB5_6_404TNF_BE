@@ -69,7 +69,7 @@ public class PetController {
 
         Long userId = principal.getUserId();
 
-        petService.create(userId, request);
+        petService.create(userId, request, null);
         redirectAttributes.addFlashAttribute(WebUtils.MSG_SUCCESS, WebUtils.getMessage("pet.create.success"));
         return "redirect:/pets";
     }
@@ -107,4 +107,3 @@ public class PetController {
 //    }
 
 }
-

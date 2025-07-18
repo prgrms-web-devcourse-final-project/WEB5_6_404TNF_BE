@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -47,7 +46,7 @@ public class Vaccination extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private VaccineType vaccineType;
 
-    @Column(nullable = false)
+    @Column
     private Integer count;
 
     @ManyToOne(fetch = FetchType.EAGER)
