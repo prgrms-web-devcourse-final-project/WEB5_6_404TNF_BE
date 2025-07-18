@@ -16,4 +16,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     List<Schedule> findByNameAndCycleAndCycleEnd(String name, ScheduleCycle cycle, LocalDate cycleEnd);
 
     List<Schedule> findByUserAndScheduleDateBetweenAndDeletedAtNull(User user, LocalDate start, LocalDate end);
+
+    List<Schedule> findByPetAndNameContainingAndDeletedAtNull(Pet pet, String name);
 }
