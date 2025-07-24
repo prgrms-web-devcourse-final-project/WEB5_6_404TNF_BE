@@ -1,12 +1,21 @@
 package com.grepp.teamnotfound.app.model.dashboard;
 
-import com.grepp.teamnotfound.app.model.dashboard.dto.*;
+import com.grepp.teamnotfound.app.model.dashboard.dto.DaySleeping;
+import com.grepp.teamnotfound.app.model.dashboard.dto.DayWalking;
+import com.grepp.teamnotfound.app.model.dashboard.dto.DayWeight;
+import com.grepp.teamnotfound.app.model.dashboard.dto.FeedingDashboardDto;
+import com.grepp.teamnotfound.app.model.dashboard.dto.SleepingDashboardDto;
+import com.grepp.teamnotfound.app.model.dashboard.dto.WalkingDashboardDto;
+import com.grepp.teamnotfound.app.model.dashboard.dto.WeightDashboardDto;
 import com.grepp.teamnotfound.app.model.life_record.LifeRecordService;
 import com.grepp.teamnotfound.app.model.life_record.entity.LifeRecord;
 import com.grepp.teamnotfound.app.model.pet.PetService;
 import com.grepp.teamnotfound.app.model.pet.dto.PetDto;
 import com.grepp.teamnotfound.app.model.pet.entity.Pet;
 import com.grepp.teamnotfound.app.model.recommend.DailyRecommendService;
+import com.grepp.teamnotfound.app.model.schedule.dto.ScheduleDto;
+import com.grepp.teamnotfound.app.model.schedule.entity.Schedule;
+import com.grepp.teamnotfound.app.model.schedule.repository.ScheduleRepository;
 import com.grepp.teamnotfound.app.model.structured_data.FeedingService;
 import com.grepp.teamnotfound.app.model.structured_data.WalkingService;
 import com.grepp.teamnotfound.app.model.structured_data.code.FeedUnit;
@@ -14,15 +23,20 @@ import com.grepp.teamnotfound.app.model.structured_data.entity.Feeding;
 import com.grepp.teamnotfound.app.model.structured_data.entity.Walking;
 import com.grepp.teamnotfound.infra.error.exception.UserException;
 import com.grepp.teamnotfound.infra.error.exception.code.UserErrorCode;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.util.*;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DashboardService {
@@ -32,6 +46,7 @@ public class DashboardService {
     private final FeedingService feedingService;
     private final DailyRecommendService dailyRecommendService;
     private final LifeRecordService lifeRecordService;
+    private final ScheduleRepository scheduleRepository;
 
     ModelMapper modelMapper = new ModelMapper();
 
@@ -188,4 +203,29 @@ public class DashboardService {
 
         return feedingMap;
     }
+
+    @Transactional(readOnly = true)
+    public List<ScheduleDto> getChecklist(Long petId, Long userId, LocalDate date) {
+        Pet pet = petService.getPet(petId);
+        if (!pet.getUser().getUserId().equals(userId)) {
+            throw new UserException(UserErrorCode.USER_ACCESS_DENIED);
+        }
+
+        List<Schedule> schedules = scheduleRepository.findChecklist(petId, date);
+
+        return schedules.stream()
+            .map(schedule -> ScheduleDto.builder()
+                .scheduleId(schedule.getScheduleId())
+                .date(schedule.getScheduleDate())
+                .petId(schedule.getPet().getPetId())
+                .petName(schedule.getPet().getName())
+                .name(schedule.getName())
+                .isDone(schedule.getIsDone())
+                .cycle(schedule.getCycle())
+                .cycleEnd(schedule.getCycleEnd())
+                .build()
+            )
+            .toList();
+    }
+
 }
