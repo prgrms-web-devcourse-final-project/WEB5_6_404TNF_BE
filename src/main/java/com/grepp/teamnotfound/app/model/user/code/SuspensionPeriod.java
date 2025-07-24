@@ -1,9 +1,12 @@
 package com.grepp.teamnotfound.app.model.user.code;
 
 
+import lombok.Getter;
+
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 
+@Getter
 public enum SuspensionPeriod {
 
     ONE_DAY(1),
@@ -13,16 +16,14 @@ public enum SuspensionPeriod {
     SEVEN_DAYS(7),
     FOURTEEN_DAYS(14),
     THIRTY_DAYS(30),
+    THREE_MONTHS(31),
+    ONE_YEAR(365),
     PERMANENT(-1);      // 영구 정지
 
     private final int days;
 
     SuspensionPeriod(int days) {
         this.days = days;
-    }
-
-    public int getDays() {
-        return days;
     }
 
     public boolean isPermanent() {

@@ -32,48 +32,30 @@ public class AdminController {
     @Operation(summary = "전체 가입자 수 조회")
     @GetMapping("v1/stats/users")
     public ResponseEntity<UserCountResponse> getUsersCount(){
-        TotalUsersDto totalUsersDto = adminService.getTotalUsersCount();
-        UserCountResponse response = UserCountResponse.builder()
-                .date(OffsetDateTime.now())
-                .total(totalUsersDto.getTotal())
-                .build();
-        return ResponseEntity.ok(response);
+        TotalUsersDto dto = adminService.getTotalUsersCount();
+        return ResponseEntity.ok(UserCountResponse.from(dto));
     }
 
     @Operation(summary = "회원 목록 조회")
     @GetMapping("v1/users")
     public ResponseEntity<UsersListResponse> getUsers(
-            @Valid @ModelAttribute UsersListRequest request
-            ){
+            @Valid @ModelAttribute UsersListRequest request){
         Page<UsersListDto> userPage = adminService.getUsersList(request);
-        UsersListResponse response = UsersListResponse.builder()
-                .users(userPage.getContent())
-                .pageInfo(PageInfo.fromPage(userPage))
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UsersListResponse.from(userPage));
     }
 
     @Operation(summary = "신고 내역 목록 조회")
     @GetMapping("v1/reports")
     public ResponseEntity<ReportsListResponse> getReports(
-            @Valid @ModelAttribute ReportsListRequest request
-    ){
+            @Valid @ModelAttribute ReportsListRequest request){
         Page<ReportsListDto> reportPage = adminService.getReportsList(request);
-        ReportsListResponse response = ReportsListResponse.builder()
-                .reports(reportPage.getContent())
-                .pageInfo(PageInfo.fromPage(reportPage))
-                .build();
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ReportsListResponse.of(reportPage));
     }
 
     @Operation(summary = "가입/탈퇴자 수 추이 조회")
     @GetMapping("v1/stats/transition")
     public ResponseEntity<UserStatsResponse> userStatsList(
-            @RequestParam(defaultValue = "MONTH") StatsUnit unit
-    ) {
-
+            @RequestParam(defaultValue = "MONTH") StatsUnit unit){
         if (unit == StatsUnit.MONTH) {
             List<MonthlyUserStatsDto> monthlyStats = adminService.getMonthlyUsersStats();
             return ResponseEntity.ok(
@@ -95,9 +77,7 @@ public class AdminController {
     @Operation(summary = "게시글 수 추이 조회")
     @GetMapping("v1/stats/articles")
     public ResponseEntity<ArticlesStatsResponse> articlesStatsList(
-            @RequestParam(defaultValue = "MONTH") StatsUnit unit
-    ) {
-
+            @RequestParam(defaultValue = "MONTH") StatsUnit unit){
         if (unit == StatsUnit.MONTH) {
             List<MonthlyArticlesStatsDto> monthlyStats = adminService.getMonthlyArticlesStats();
             return ResponseEntity.ok(
@@ -119,23 +99,14 @@ public class AdminController {
     @Operation(summary = "신고내역 상세 보기")
     @GetMapping("v1/reports/{reportId}")
     public ResponseEntity<ReportDetailResponse> getReportDetail(@PathVariable Long reportId) {
-
         ReportDetailDto dto = reportService.getReportDetail(reportId);
-
-        return ResponseEntity.ok(
-                ReportDetailResponse.from(dto));
+        return ResponseEntity.ok(ReportDetailResponse.from(dto));
     }
 
     @Operation(summary = "신고 처리하기")
     @PatchMapping("v1/reports/result-accept")
     public ResponseEntity<?> acceptReport(@RequestBody AcceptReportRequest request){
-
-        AcceptReportDto dto = AcceptReportDto.builder()
-                .reportId(request.getReportId())
-                .adminReason(request.getAdminReason())
-                .period(request.getPeriod())
-                .build();
-
+        AcceptReportDto dto = AcceptReportDto.from(request);
         adminService.acceptReportAndSuspendUser(dto);
         return ResponseEntity.ok("신고가 정상적으로 처리되었습니다.");
     }
@@ -143,12 +114,7 @@ public class AdminController {
     @Operation(summary = "신고 철회하기")
     @PatchMapping("v1/reports/result-reject")
     public ResponseEntity<?> rejectReport(@RequestBody RejectReportRequest request){
-
-        RejectReportDto dto = RejectReportDto.builder()
-                .reportId(request.getReportId())
-                .adminReason(request.getAdminReason())
-                .build();
-
+        RejectReportDto dto = RejectReportDto.from(request);
         adminService.rejectReport(dto);
         return ResponseEntity.ok("신고를 성공적으로 거절하였습니다.");
     }

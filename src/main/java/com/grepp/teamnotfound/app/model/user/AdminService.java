@@ -45,10 +45,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public TotalUsersDto getTotalUsersCount() {
         long totalUsers = userRepository.count();
-        return TotalUsersDto.builder()
-                .date(OffsetDateTime.now())
-                .total(totalUsers)
-                .build();
+        return TotalUsersDto.of(totalUsers);
     }
 
     @Transactional(readOnly = true)
