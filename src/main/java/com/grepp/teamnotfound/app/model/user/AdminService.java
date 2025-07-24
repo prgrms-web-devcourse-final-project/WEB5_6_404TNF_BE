@@ -4,12 +4,9 @@ import com.grepp.teamnotfound.app.controller.api.admin.payload.ReportsListReques
 import com.grepp.teamnotfound.app.controller.api.admin.payload.UsersListRequest;
 import com.grepp.teamnotfound.app.model.board.dto.MonthlyArticlesStatsDto;
 import com.grepp.teamnotfound.app.model.board.dto.YearlyArticlesStatsDto;
-import com.grepp.teamnotfound.app.model.board.entity.Article;
 import com.grepp.teamnotfound.app.model.board.repository.ArticleRepository;
-import com.grepp.teamnotfound.app.model.reply.entity.Reply;
 import com.grepp.teamnotfound.app.model.reply.repository.ReplyRepository;
 import com.grepp.teamnotfound.app.model.report.code.ReportState;
-import com.grepp.teamnotfound.app.model.report.code.ReportType;
 import com.grepp.teamnotfound.app.model.report.dto.ReportsListDto;
 import com.grepp.teamnotfound.app.model.report.entity.Report;
 import com.grepp.teamnotfound.app.model.report.repository.ReportRepository;
@@ -17,8 +14,6 @@ import com.grepp.teamnotfound.app.model.user.dto.*;
 import com.grepp.teamnotfound.app.model.user.entity.User;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
-import com.grepp.teamnotfound.infra.error.exception.code.BoardErrorCode;
-import com.grepp.teamnotfound.infra.error.exception.code.ReplyErrorCode;
 import com.grepp.teamnotfound.infra.error.exception.code.ReportErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,9 +153,10 @@ public class AdminService {
         // 같은 contentId, 같은 category, PENDING인 report에 대해 reject 처리
         // 방법 1. report repo에서 List<Report> reports 를 가져옴
         //        for 를 돌면서 report.reject(dto.getAdminReason());
-        List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndState(
+        List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
                 targetReport.getCategory(),
+                targetReport.getType(),
                 ReportState.PENDING
         );
         for (Report report : reports) {
@@ -179,15 +175,16 @@ public class AdminService {
 
     @Transactional
     public void acceptReportAndSuspendUser(AcceptReportDto dto) {
-        Report targetReport = reportRepository.findById(dto.getReportId())
+        Report targetReport = reportRepository.findWithReportedUserById(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
         hideContentIfNot(targetReport);
         targetReport.accept(dto.getAdminReason());
 
-        List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndState(
+        List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
                 targetReport.getCategory(),
+                targetReport.getType(),
                 ReportState.PENDING
         );
         for (Report report : reports) {
@@ -199,16 +196,11 @@ public class AdminService {
     }
 
     private void hideContentIfNot(Report targetReport) {
-        if(targetReport.getType() == ReportType.BOARD){
-            Article article = articleRepository.findByArticleId(targetReport.getContentId())
-                    .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
-            if(article.getReportedAt() == null){article.report();}
-
-        } else if(targetReport.getType() == ReportType.REPLY){
-            Reply reply = replyRepository.findByReplyId(targetReport.getContentId())
-                    .orElseThrow(() -> new BusinessException(ReplyErrorCode.REPLY_NOT_FOUND));
-            if(reply.getReportedAt() == null){reply.report();}
-        } else throw new BusinessException(ReportErrorCode.REPORT_TYPE_BAD_REQUEST);
+        targetReport.getType().processReport(
+                targetReport.getContentId(),
+                articleRepository,
+                replyRepository
+        );
     }
 
     public Page<UsersListDto> getUsersList(UsersListRequest request) {
