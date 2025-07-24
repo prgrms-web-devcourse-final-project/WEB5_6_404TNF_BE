@@ -11,7 +11,7 @@ import java.util.List;
 public class ArticlesStatsResponse<T> {
 
 
-    private OffsetDateTime viewDat;
+    private OffsetDateTime viewDate;
     private List<T> stats;
 
 }

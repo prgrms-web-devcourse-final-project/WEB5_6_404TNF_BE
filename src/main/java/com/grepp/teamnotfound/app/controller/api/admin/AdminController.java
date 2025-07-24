@@ -2,8 +2,6 @@ package com.grepp.teamnotfound.app.controller.api.admin;
 
 import com.grepp.teamnotfound.app.controller.api.admin.code.StatsUnit;
 import com.grepp.teamnotfound.app.controller.api.admin.payload.*;
-import com.grepp.teamnotfound.app.model.board.dto.MonthlyArticlesStatsDto;
-import com.grepp.teamnotfound.app.model.board.dto.YearlyArticlesStatsDto;
 import com.grepp.teamnotfound.app.model.report.ReportService;
 import com.grepp.teamnotfound.app.model.report.dto.ReportDetailDto;
 import com.grepp.teamnotfound.app.model.report.dto.ReportsListDto;
@@ -82,7 +80,7 @@ public class AdminController {
             List<MonthlyArticlesStatsDto> monthlyStats = adminService.getMonthlyArticlesStats();
             return ResponseEntity.ok(
                     ArticlesStatsResponse.<MonthlyArticlesStatsDto>builder()
-                            .viewDat(OffsetDateTime.now())
+                            .viewDate(OffsetDateTime.now())
                             .stats(monthlyStats)
                             .build());
         }
@@ -90,7 +88,7 @@ public class AdminController {
             List<YearlyArticlesStatsDto> yearlyStats = adminService.getYearlyArticlesStats();
             return ResponseEntity.ok(
                     ArticlesStatsResponse.<YearlyArticlesStatsDto>builder()
-                            .viewDat(OffsetDateTime.now())
+                            .viewDate(OffsetDateTime.now())
                             .stats(yearlyStats)
                             .build());
         }

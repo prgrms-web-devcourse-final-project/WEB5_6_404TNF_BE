@@ -2,8 +2,6 @@ package com.grepp.teamnotfound.app.model.user;
 
 import com.grepp.teamnotfound.app.controller.api.admin.payload.ReportsListRequest;
 import com.grepp.teamnotfound.app.controller.api.admin.payload.UsersListRequest;
-import com.grepp.teamnotfound.app.model.board.dto.MonthlyArticlesStatsDto;
-import com.grepp.teamnotfound.app.model.board.dto.YearlyArticlesStatsDto;
 import com.grepp.teamnotfound.app.model.board.repository.ArticleRepository;
 import com.grepp.teamnotfound.app.model.reply.repository.ReplyRepository;
 import com.grepp.teamnotfound.app.model.report.code.ReportState;
@@ -57,12 +55,7 @@ public class AdminService {
             int joined = userRepository.countJoinedUsersBetween(monthStart, monthEnd);
             int left = userRepository.countLeftUsersBetween(monthStart, monthEnd);
 
-            MonthlyUserStatsDto stats = MonthlyUserStatsDto.builder()
-                    .month(monthStart.getMonthValue())
-                    .joinedCount(joined)
-                    .leaveCount(left)
-                    .build();
-
+            MonthlyUserStatsDto stats = MonthlyUserStatsDto.of(monthStart.getMonthValue(), joined, left);
             response.add(stats);
         }
 
@@ -82,12 +75,7 @@ public class AdminService {
             int joined = userRepository.countJoinedUsersBetween(yearStart, yearEnd);
             int left = userRepository.countLeftUsersBetween(yearStart, yearEnd);
 
-            YearlyUserStatsDto stats = YearlyUserStatsDto.builder()
-                    .year(yearStart.getYear())
-                    .joinedCount(joined)
-                    .leaveCount(left)
-                    .build();
-
+            YearlyUserStatsDto stats = YearlyUserStatsDto.of(yearStart.getYear(), joined, left);
             response.add(stats);
         }
 
@@ -107,11 +95,7 @@ public class AdminService {
 
             int articles = articleRepository.countArticlesBetween(monthStart, monthEnd);
 
-            MonthlyArticlesStatsDto stats = MonthlyArticlesStatsDto.builder()
-                    .month(monthStart.getMonthValue())
-                    .articlesCount(articles)
-                    .build();
-
+            MonthlyArticlesStatsDto stats = MonthlyArticlesStatsDto.of(monthStart.getMonthValue(), articles);
             response.add(stats);
         }
 
@@ -131,11 +115,7 @@ public class AdminService {
 
             int articles = articleRepository.countArticlesBetween(yearStart, yearEnd);
 
-            YearlyArticlesStatsDto stats = YearlyArticlesStatsDto.builder()
-                    .year(yearStart.getYear())
-                    .articlesCount(articles)
-                    .build();
-
+            YearlyArticlesStatsDto stats = YearlyArticlesStatsDto.of(yearStart.getYear(), articles);
             response.add(stats);
         }
 
