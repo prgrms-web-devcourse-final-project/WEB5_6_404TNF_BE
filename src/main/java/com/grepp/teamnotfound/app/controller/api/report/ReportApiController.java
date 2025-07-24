@@ -26,13 +26,7 @@ public class ReportApiController {
     public ResponseEntity<?> createReport(@RequestBody ReportRequest request,
                                           @AuthenticationPrincipal Principal principal) {
 
-        ReportCommand command = ReportCommand.builder()
-                .reporterId(principal.getUserId())
-                .reportType(request.getReportType())
-                .contentId(request.getContentId())
-                .reportCategory(request.getReportCategory())
-                .reason(request.getReason())
-                .build();
+        ReportCommand command = ReportCommand.from(principal, request);
         Long createId = reportService.createReport(command);
         return ResponseEntity.ok(ApiResponse.success(createId));
     }
