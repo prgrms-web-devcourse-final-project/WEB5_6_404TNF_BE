@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,4 +41,12 @@ public interface ReportRepository extends JpaRepository<Report, Long>, ReportRep
             "join fetch r.reported " +
             "where r.reportId = :reportId")
     Optional<Report> findByReportIdWithUsers(@Param("reportId") Long reportId);
+
+    @Query("""
+            select r
+            from Report r
+            join fetch r.reported u
+            where r.reportId = :reportId
+            """)
+    Optional<Report> findWithReportedUserById(@Param("reportId") Long reportId);
 }
