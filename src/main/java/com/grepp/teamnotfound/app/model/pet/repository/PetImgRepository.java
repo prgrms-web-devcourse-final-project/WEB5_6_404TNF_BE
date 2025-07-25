@@ -2,6 +2,8 @@ package com.grepp.teamnotfound.app.model.pet.repository;
 
 import com.grepp.teamnotfound.app.model.pet.entity.PetImg;
 import feign.Param;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -16,4 +18,5 @@ public interface PetImgRepository extends JpaRepository<PetImg, Long> {
     @Query("UPDATE PetImg pi SET pi.deletedAt = CURRENT_TIMESTAMP WHERE pi.pet.petId = :petId AND pi.deletedAt IS NULL")
     void softDeletePetImg(@Param("petId") Long petId);
 
+    List<PetImg> findByDeletedAtBetween(OffsetDateTime startOfTargetDay, OffsetDateTime endOfTargetDay);
 }

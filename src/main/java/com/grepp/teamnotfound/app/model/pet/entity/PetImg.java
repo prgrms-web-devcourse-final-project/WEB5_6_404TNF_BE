@@ -1,7 +1,9 @@
 package com.grepp.teamnotfound.app.model.pet.entity;
 
+import com.grepp.teamnotfound.infra.util.file.ImageFile;
 import com.grepp.teamnotfound.infra.code.ImgType;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
+import com.grepp.teamnotfound.infra.util.file.FileDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -14,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -22,7 +25,7 @@ import lombok.Setter;
 @Table(name = "PetImgs")
 @Getter
 @Setter
-public class PetImg extends BaseEntity {
+public class PetImg extends BaseEntity implements ImageFile {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -55,5 +58,19 @@ public class PetImg extends BaseEntity {
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
+    @Override
+    public OffsetDateTime getDeletedAt() {
+        return super.getDeletedAt();
+    }
+
+    @Override
+    public FileDto toFileDto() {
+        return new FileDto(
+            this.originName,
+            this.renamedName,
+            "pet",
+            this.savePath
+        );
+    }
 }
 

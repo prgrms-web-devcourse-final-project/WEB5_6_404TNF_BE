@@ -37,7 +37,18 @@ public class GoogleStorageManager extends AbstractFileManager {
     }
 
     @Override
+    public void delete(List<FileDto> fileDtos) {
+        if (fileDtos == null || fileDtos.isEmpty()) {
+            return;
+        }
+        for (FileDto fileDto : fileDtos) {
+            deleteFile(fileDto);
+        }
+    }
+
+    @Override
     protected void deleteFile(FileDto fileDto) {
+        // fileDto.savePath() = storageBaseUrl + bucket + / + depth + /
         Storage storage = StorageOptions.getDefaultInstance().getService();
         String objectName = fileDto.depth() + "/" + fileDto.renamedName();
         BlobId blobId = BlobId.of(bucket, objectName);
@@ -45,6 +56,8 @@ public class GoogleStorageManager extends AbstractFileManager {
         boolean deleted = storage.delete(blobId);
         if (!deleted) {
             log.warn("GCS 파일 삭제 실패: {}", objectName);
+        } else {
+            log.info("GCS 파일 삭제 성공: {}", objectName);
         }
     }
 

@@ -1,5 +1,6 @@
 package com.grepp.teamnotfound.app.model.board.entity;
 
+import com.grepp.teamnotfound.infra.util.file.ImageFile;
 import com.grepp.teamnotfound.infra.code.ImgType;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import com.grepp.teamnotfound.infra.util.file.FileDto;
@@ -15,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import java.time.OffsetDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +30,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleImg extends BaseEntity {
+public class ArticleImg extends BaseEntity implements ImageFile {
 
     @Id
     @Column(nullable = false, updatable = false)
@@ -68,5 +70,20 @@ public class ArticleImg extends BaseEntity {
             .originName(fileDto.originName())
             .renamedName(fileDto.renamedName())
             .build();
+    }
+
+    @Override
+    public OffsetDateTime getDeletedAt() {
+        return super.getDeletedAt();
+    }
+
+    @Override
+    public FileDto toFileDto() {
+        return new FileDto(
+            this.originName,
+            this.renamedName,
+            "article",
+            this.savePath
+        );
     }
 }
