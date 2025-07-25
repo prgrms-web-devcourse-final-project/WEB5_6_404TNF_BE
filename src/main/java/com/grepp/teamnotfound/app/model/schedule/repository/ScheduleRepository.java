@@ -20,4 +20,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     @Query("SELECT s FROM Schedule s WHERE s.pet.petId = :petId AND s.scheduleDate = :date AND s.deletedAt IS NULL")
     List<Schedule> findChecklist(@Param("petId") Long petId, @Param("date") LocalDate date);
+
+    @Query("SELECT s FROM Schedule s WHERE s.scheduleDate = :tomorrow AND s.isDone = false AND s.deletedAt IS NULL")
+    List<Schedule> findSchedulesForNotification(LocalDate tomorrow);
 }

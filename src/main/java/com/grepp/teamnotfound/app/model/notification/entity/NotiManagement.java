@@ -16,7 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "noti_management")
+@Table(name = "NotiManagements")
 @Getter
 @Setter
 public class NotiManagement extends BaseEntity {
@@ -40,12 +40,12 @@ public class NotiManagement extends BaseEntity {
     private User user;
 
     @Column(nullable = false)
-    private Boolean isNotiAll;
+    private Boolean isNotiAll = true;
 
     @Column(nullable = false)
-    private Boolean isNotiService;
+    private Boolean isNotiService = true;
 
     @Column(nullable = false)
-    private Boolean isNotiSchedule;
+    private Boolean isNotiSchedule = true;
 
 }

@@ -84,6 +84,10 @@ public class ArticleService {
         Board board = boardRepository.findByName(request.getBoardType().name())
             .orElseThrow(() -> new BoardException(BoardErrorCode.BOARD_NOT_FOUND));
 
+        if (user.getSuspensionEndAt() != null && user.getSuspensionEndAt().isAfter(OffsetDateTime.now())) {
+            throw new BusinessException(UserErrorCode.USER_REPORTED);
+        }
+
         Article article = Article.builder()
             .title(request.getTitle())
             .content(request.getContent())
@@ -149,6 +153,11 @@ public class ArticleService {
             throw new BoardException(BoardErrorCode.BOARD_CONFLICT);
         }
 
+        if (requestUser.getSuspensionEndAt() != null &&
+            requestUser.getSuspensionEndAt().isAfter(OffsetDateTime.now())) {
+            throw new BusinessException(UserErrorCode.USER_REPORTED);
+        }
+
         beforeArticle.setTitle(request.getTitle());
         beforeArticle.setContent(request.getContent());
         beforeArticle.setUpdatedAt(OffsetDateTime.now());
@@ -175,6 +184,7 @@ public class ArticleService {
         // 게시글을 삭제하면 댓글, 이미지 모두 soft delete
         OffsetDateTime deletedTime = OffsetDateTime.now();
         article.setDeletedAt(deletedTime);
+        article.setUpdatedAt(deletedTime);
         articleImgRepository.softDeleteByArticleId(articleId, deletedTime);
         articleLikeRepository.hardDeleteByArticleId(articleId);
         replyRepository.softDeleteByArticleId(articleId, deletedTime);

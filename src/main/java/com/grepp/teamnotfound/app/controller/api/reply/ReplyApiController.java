@@ -33,6 +33,7 @@ public class ReplyApiController {
 
     @GetMapping("/v1")
     @Operation(summary = "특정 게시글의 댓글 리스트 조회")
+    @PreAuthorize("isAnonymous() or isAuthenticated()")
     public ResponseEntity<?> getAllReplies(
         @PathVariable Long articleId,
         @ModelAttribute @Valid ReplyListRequest request

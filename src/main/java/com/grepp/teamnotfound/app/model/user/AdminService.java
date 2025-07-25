@@ -2,9 +2,15 @@ package com.grepp.teamnotfound.app.model.user;
 
 import com.grepp.teamnotfound.app.controller.api.admin.payload.ReportsListRequest;
 import com.grepp.teamnotfound.app.controller.api.admin.payload.UsersListRequest;
+import com.grepp.teamnotfound.app.model.board.entity.Article;
 import com.grepp.teamnotfound.app.model.board.repository.ArticleRepository;
+import com.grepp.teamnotfound.app.model.notification.code.NotiType;
+import com.grepp.teamnotfound.app.model.notification.dto.NotiServiceCreateDto;
+import com.grepp.teamnotfound.app.model.notification.handler.NotiAppender;
+import com.grepp.teamnotfound.app.model.reply.entity.Reply;
 import com.grepp.teamnotfound.app.model.reply.repository.ReplyRepository;
 import com.grepp.teamnotfound.app.model.report.code.ReportState;
+import com.grepp.teamnotfound.app.model.report.code.ReportType;
 import com.grepp.teamnotfound.app.model.report.dto.ReportsListDto;
 import com.grepp.teamnotfound.app.model.report.entity.Report;
 import com.grepp.teamnotfound.app.model.report.repository.ReportRepository;
@@ -12,7 +18,12 @@ import com.grepp.teamnotfound.app.model.user.dto.*;
 import com.grepp.teamnotfound.app.model.user.entity.User;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
+import com.grepp.teamnotfound.infra.error.exception.code.BoardErrorCode;
+import com.grepp.teamnotfound.infra.error.exception.code.ReplyErrorCode;
 import com.grepp.teamnotfound.infra.error.exception.code.ReportErrorCode;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,6 +45,7 @@ public class AdminService {
     private final ReportRepository reportRepository;
     private final ArticleRepository articleRepository;
     private final ReplyRepository replyRepository;
+    private final NotiAppender notiAppender;
 
     @Transactional(readOnly = true)
     public TotalUsersDto getTotalUsersCount() {
@@ -130,6 +142,11 @@ public class AdminService {
 
         targetReport.reject(dto.getAdminReason());
 
+        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
+            .targetId(targetReport.getReportId())
+            .build();
+        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_FAIL, notiDto1);
+
         // 같은 contentId, 같은 category, PENDING인 report에 대해 reject 처리
         // 방법 1. report repo에서 List<Report> reports 를 가져옴
         //        for 를 돌면서 report.reject(dto.getAdminReason());
@@ -141,6 +158,11 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.reject(dto.getAdminReason());
+
+            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
+                .targetId(report.getReportId())
+                .build();
+            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_FAIL, notiDtos);
         }
 
         // 방법 2. 벌크 연산 - updatedAt 추가 필요
@@ -161,6 +183,12 @@ public class AdminService {
         insertReportedAtOfContent(targetReport);
         targetReport.accept(dto.getAdminReason());
 
+        NotiServiceCreateDto notiDto1 = NotiServiceCreateDto.builder()
+            .targetId(targetReport.getReportId())
+            .build();
+        notiAppender.append(targetReport.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDto1);
+        notiAppender.append(targetReport.getReported().getUserId(), NotiType.REPORTED, notiDto1);
+
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
                 targetReport.getContentId(),
                 targetReport.getCategory(),
@@ -169,6 +197,12 @@ public class AdminService {
         );
         for (Report report : reports) {
             report.accept(dto.getAdminReason());
+
+            NotiServiceCreateDto notiDtos = NotiServiceCreateDto.builder()
+                .targetId(report.getReportId())
+                .build();
+            notiAppender.append(report.getReporter().getUserId(), NotiType.REPORT_SUCCESS, notiDtos);
+            notiAppender.append(report.getReported().getUserId(), NotiType.REPORTED, notiDtos);
         }
 
         User user = targetReport.getReported();

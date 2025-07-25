@@ -1,0 +1,36 @@
+<!-- sse-test.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>SSE Test</title>
+</head>
+<body>
+<h1>SSE 메시지:</h1>
+<pre id="output"></pre>
+
+<script>
+  const output = document.getElementById("output");
+
+  const source = new EventSource("http://localhost:8080/api/notification/v1/subscribe");
+
+  source.onmessage = function(event) {
+    output.textContent += "message: " + event.data + "\n";
+  };
+
+  source.onerror = function(err) {
+    output.textContent += "ERROR: " + JSON.stringify(err) + "\n";
+    source.close();
+  };
+
+  source.addEventListener("connect", function(event) {
+    output.textContent += "✅ Connected: " + event.data + "\n";
+  });
+
+  source.addEventListener("noti", function(event) {
+    output.textContent += `📩 [noti] ${event.data}\n`;
+  });
+
+</script>
+</body>
+</html>

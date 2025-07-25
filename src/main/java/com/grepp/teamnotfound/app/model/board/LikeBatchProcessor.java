@@ -3,11 +3,12 @@ package com.grepp.teamnotfound.app.model.board;
 import com.grepp.teamnotfound.app.model.board.entity.ArticleLike;
 import com.grepp.teamnotfound.app.model.board.repository.ArticleLikeRepository;
 import com.grepp.teamnotfound.app.model.board.repository.ArticleRepository;
+import com.grepp.teamnotfound.app.model.notification.code.NotiType;
+import com.grepp.teamnotfound.app.model.notification.dto.NotiServiceCreateDto;
+import com.grepp.teamnotfound.app.model.notification.handler.NotiAppender;
 import com.grepp.teamnotfound.app.model.user.repository.UserRepository;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ public class LikeBatchProcessor {
     private final ArticleRepository articleRepository;
     private final ArticleLikeRepository articleLikeRepository;
     private final UserRepository userRepository;
+    private final NotiAppender notiAppender;
 
     // 1분마다 실행
     @Scheduled(fixedDelay = 60000)
@@ -67,6 +69,21 @@ public class LikeBatchProcessor {
                     ).toList();
 
                 articleLikeRepository.saveAll(likesToInsert);
+
+                for (ArticleLike like : likesToInsert) {
+                    Long senderId = like.getUser().getUserId();
+                    Long receiverId = like.getArticle().getUser().getUserId();
+                    Long targetId = like.getLikeId();
+
+                    if (!senderId.equals(receiverId)) {
+                        NotiServiceCreateDto dto = NotiServiceCreateDto.builder()
+                            .targetId(targetId)
+                            .notiType(NotiType.LIKE)
+                            .build();
+
+                        notiAppender.append(receiverId, NotiType.LIKE, dto);
+                    }
+                }
             }
 
             // 좋아요를 한꺼번에 DELETE

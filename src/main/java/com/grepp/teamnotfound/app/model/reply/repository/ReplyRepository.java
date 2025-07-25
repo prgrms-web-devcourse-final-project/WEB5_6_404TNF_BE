@@ -18,7 +18,7 @@ import org.springframework.data.repository.query.Param;
 public interface ReplyRepository extends JpaRepository<Reply, Long> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
-    @Query("UPDATE Reply r SET r.deletedAt = :deletedAt WHERE r.article.articleId = :articleId AND r.deletedAt IS NULL")
+    @Query("UPDATE Reply r SET r.deletedAt = :deletedAt, r.updatedAt = :deletedAt WHERE r.article.articleId = :articleId AND r.deletedAt IS NULL")
     void softDeleteByArticleId(@Param("articleId") Long articleId, @Param("deletedAt") OffsetDateTime deletedAt);
 
     Integer countByArticle_ArticleIdAndDeletedAtIsNullAndReportedAtIsNull(Long articleId);
