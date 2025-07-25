@@ -45,7 +45,7 @@ public class ReportService {
         return ReportDetailDto.from(report, reporterNickname, article);
     }
 
-
+    @Transactional
     public Long createReport(ReportCommand command) {
         User reporter = validateReporter(command.getReporterId());
         User reported = findReportedUser(command.getReportType(), command.getContentId());
@@ -61,7 +61,8 @@ public class ReportService {
         return report.getReportId();
     }
 
-    private void validateDuplicateReport(User reporter, ReportCommand command) {
+    @Transactional(readOnly = true)
+    protected void validateDuplicateReport(User reporter, ReportCommand command) {
         if (reportRepository.duplicateReport(reporter, command.getReportType(), command.getContentId())) {
             throw new BusinessException(ReportErrorCode.DUPLICATED_REPORT);
         }
@@ -73,7 +74,8 @@ public class ReportService {
         }
     }
 
-    private User findReportedUser(ReportType reportType, Long contentId) {
+    @Transactional(readOnly = true)
+    protected User findReportedUser(ReportType reportType, Long contentId) {
         if(reportType==ReportType.BOARD){
             // 게시글 존재 확인 및 작성자 갖고 오기
             Article article = articleRepository.findByIdFetchUser(contentId)

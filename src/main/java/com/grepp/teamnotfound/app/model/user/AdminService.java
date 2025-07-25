@@ -158,7 +158,7 @@ public class AdminService {
         Report targetReport = reportRepository.findWithReportedUserById(dto.getReportId())
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
-        hideContentIfNot(targetReport);
+        insertReportedAtOfContent(targetReport);
         targetReport.accept(dto.getAdminReason());
 
         List<Report> reports = reportRepository.findByContentIdAndReportCategoryAndReportTypeState(
@@ -175,7 +175,7 @@ public class AdminService {
         user.suspend(dto.getPeriod());
     }
 
-    private void hideContentIfNot(Report targetReport) {
+    private void insertReportedAtOfContent(Report targetReport) {
         targetReport.getType().processReport(
                 targetReport.getContentId(),
                 articleRepository,
