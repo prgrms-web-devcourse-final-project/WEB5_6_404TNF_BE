@@ -2,6 +2,7 @@ package com.grepp.teamnotfound.app.model.user.entity;
 
 import com.grepp.teamnotfound.app.model.auth.code.Role;
 import com.grepp.teamnotfound.app.model.user.code.SuspensionPeriod;
+import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
 import com.grepp.teamnotfound.infra.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -77,4 +78,13 @@ public class User extends BaseEntity {
             super.updatedAt = OffsetDateTime.now();
         }
     }
-}
+
+    public UserStateResponse getUserState() {
+        if (this.deletedAt != null) {
+            return UserStateResponse.LEAVE;
+        } else if(this.suspensionEndAt == null || this.suspensionEndAt.isBefore(OffsetDateTime.now())){
+            return UserStateResponse.ACTIVE;
+        } else
+            return UserStateResponse.SUSPENDED;
+        }
+    }

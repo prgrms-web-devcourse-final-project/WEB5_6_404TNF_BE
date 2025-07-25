@@ -9,25 +9,32 @@ import lombok.Getter;
 public class ReportDetailResponse {
 
     private Long reportId;
-    private String type;        //board or reply
+    private String type;        // board or reply
     private Long contentId;     // articleid or replyid
     private Long articleId;     // articleid
-    private String boardName;
+    private String boardType;   // free, qna
     private String category;    // "ABUSE\" (or \"SPAM\", \"FRAUD\", \"ADULT_CONTENT\""
     private String reason;
-    private String status;      //COMPLETE" (or "PENDING")
-
+    private String status;      // pending, reject, accept
+    private String reporterNickname;
+    private String reportedNickname;
+    private String adminReason;
+    private String reportedState;   // active, suspended, leave
 
     public static ReportDetailResponse from(ReportDetailDto dto) {
         return ReportDetailResponse.builder()
                 .reportId(dto.getReportId())
-                .type(dto.getType())
+                .type(dto.getType().name())
                 .contentId(dto.getContentId())
                 .articleId(dto.getArticleId())
-                .boardName(dto.getBoardName())
-                .category(dto.getCategory())
+                .boardType(dto.getBoardType())
+                .category(dto.getCategory().name())
                 .reason(dto.getReason())
-                .status(dto.getStatus())
+                .status(dto.getStatus().name())
+                .reporterNickname(dto.getReporterNickname())
+                .reportedNickname(dto.getReportedNickname())
+                .adminReason(dto.getAdminReason())
+                .reportedState(dto.getReportedState().name())
                 .build();
     }
 }

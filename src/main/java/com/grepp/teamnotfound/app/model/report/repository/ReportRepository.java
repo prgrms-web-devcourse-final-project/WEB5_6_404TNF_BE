@@ -15,8 +15,6 @@ import java.util.Optional;
 
 public interface ReportRepository extends JpaRepository<Report, Long>, ReportRepositoryCustom {
 
-    Optional<Report> findByReportId(Long reportId);
-
     @Query("select count(r) > 0 " +
             "from Report r " +
             "where r.reporter = :reporter " +
@@ -34,12 +32,12 @@ public interface ReportRepository extends JpaRepository<Report, Long>, ReportRep
     @Query("update Report r set r.state = :reportState, r.adminReason = :adminReason " +
             "where r.contentId = :contentId and r.category = :category and r.state = :currentState")
     void bulkRejectPendingReports(@Param("contentId") Long contentId, @Param("category") ReportCategory category,
-                                  @Param("reportState") ReportState reportState, @Param("adminReason") String adminReason, @Param("currentState") ReportState currentState);
+                                 @Param("reportState") ReportState reportState, @Param("adminReason") String adminReason, @Param("currentState") ReportState currentState);
 
-    @Query("""
-            select r from Report r
-            join fetch r.reported
-            where r.reportId = :reportId
-            """)
-    Optional<Report> findWithReportedUserById(@Param("reportId") Long reportId);
+    @Query ("select r " +
+            "from Report r " +
+            "join fetch r.reporter " +
+            "join fetch r.reported " +
+            "where r.reportId = :reportId")
+    Optional<Report> findByReportIdWithUsers(@Param("reportId") Long reportId);
 }

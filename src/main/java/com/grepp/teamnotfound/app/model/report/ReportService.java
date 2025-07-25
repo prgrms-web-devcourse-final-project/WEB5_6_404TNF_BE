@@ -31,18 +31,17 @@ public class ReportService {
 
     @Transactional(readOnly = true)
     public ReportDetailDto getReportDetail(Long reportId) {
-        Report report = reportRepository.findByReportId(reportId)
+
+        Report report = reportRepository.findByReportIdWithUsers(reportId)
                 .orElseThrow(() -> new BusinessException(ReportErrorCode.REPORT_NOT_FOUND));
 
-        String reporterNickname = userRepository.findNicknameByUserId(report.getReporter().getUserId());
+        Article article = (report.getType() == ReportType.REPLY) ?
+                replyRepository.findArticleWithBoardByReplyId(report.getContentId())
+                        .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND))
+                : articleRepository.findWithBoardByArticleId(report.getContentId())
+                .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
 
-                Article article = (report.getType()==ReportType.REPLY) ?
-                replyRepository.findArticleByReplyId(report.getContentId())
-                        .orElseThrow(()-> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND))
-                : articleRepository.findByArticleId(report.getContentId())
-                        .orElseThrow(()-> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
-
-        return ReportDetailDto.from(report, reporterNickname, article);
+        return ReportDetailDto.from(report, article);
     }
 
     @Transactional
@@ -82,7 +81,7 @@ public class ReportService {
                     .orElseThrow(() -> new BusinessException(BoardErrorCode.ARTICLE_NOT_FOUND));
             return article.getUser();
 
-        } else if(reportType==ReportType.REPLY){
+        } else if (reportType == ReportType.REPLY) {
             Reply reply = replyRepository.findByIdFetchUser(contentId)
                     .orElseThrow(() -> new BusinessException(ReplyErrorCode.REPLY_NOT_FOUND));
             return reply.getUser();

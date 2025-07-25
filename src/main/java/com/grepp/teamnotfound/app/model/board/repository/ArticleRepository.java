@@ -1,6 +1,7 @@
 package com.grepp.teamnotfound.app.model.board.repository;
 
 import com.grepp.teamnotfound.app.model.board.entity.Article;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +34,12 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Article
     Optional<Article> findByIdFetchUser(@Param("articleId") Long articleId);
 
     Optional<Article> findByArticleId(Long articleId);
+
+    @Query("""
+            select a
+            from Article a
+            join fetch a.board
+            where a.articleId = :articleId
+            """)
+    Optional<Article> findWithBoardByArticleId(@Param("articleId") Long articleId);
 }
