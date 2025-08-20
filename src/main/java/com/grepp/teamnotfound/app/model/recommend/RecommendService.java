@@ -69,6 +69,7 @@ public class RecommendService {
     }
 
     // Recommend 생성
+    @Transactional
     public Recommend createRecommend(PetInfoDto petInfoDto, RecommendStateDto stateDto, GeminiResponse response) {
         RecommendDto res = RecommendDto.toDto(petInfoDto, stateDto, response);
 
@@ -77,6 +78,17 @@ public class RecommendService {
         recommendRepository.save(recommend);
 
         return recommend;
+    }
+
+    // synchronized을 이용하여 순차적으로 Recommend 존재 확인 및 등록
+    @Transactional(readOnly = true)
+    public synchronized Recommend createRecommendIfAbsent(RecommendCheckDto checkDto, GeminiResponse response) {
+        return getRecommendByPetStates(checkDto)
+            .orElseGet(() -> createRecommend(
+                checkDto.getPetInfoDto(),
+                checkDto.getStateDto(),
+                response
+            ));
     }
 
 }

@@ -57,19 +57,18 @@ public class RecommendApiController {
 
         // 3. 데이터 기반 Recommend 있는지 체크 (종, 나이, 생활기록 상태)
         Optional<Recommend> existingRecommend = recommendService.getRecommendByPetStates(checkDto);
-        if (existingRecommend.isPresent()) {
-            String content = existingRecommend.get().getContent();
 
-            // DailyRecommend에 저장
-            dailyRecommendService.createDailyRecommend(pet, existingRecommend.get());
-            return ResponseEntity.ok(content);
+        Recommend recommend;
+        if (existingRecommend.isPresent()) {
+            // 추천이 이미 존재할 경우, 기존 데이터 사용
+            recommend = existingRecommend.get();
+        } else {
+            // 추천이 존재하지 않을 경우, 맞춤형 제안 문구 생성
+            GeminiResponse response = geminiService.getGemini(checkDto);
+            // 순차적으로 Recommend 생성
+            recommend = recommendService.createRecommendIfAbsent(checkDto, response);
         }
 
-        // 4. 새로운 Recommend 생성
-        // Gemini 응답
-        GeminiResponse response = geminiService.getGemini(checkDto);
-        // Recommend 생성
-        Recommend recommend = recommendService.createRecommend(checkDto.getPetInfoDto(), checkDto.getStateDto(), response);
         // DailyRecommend에 저장
         dailyRecommendService.createDailyRecommend(pet, recommend);
 
