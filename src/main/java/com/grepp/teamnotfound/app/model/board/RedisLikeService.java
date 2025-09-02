@@ -165,6 +165,62 @@ public class RedisLikeService {
     }
 
     /**
+     * Batch 처리용 - 조회
+     * Redis 에서 요청을 가져오기만 하고 삭제하지 않는 메서드
+     **/
+
+    // 좋아요/취소 요청을 받은 articleId 반환
+    public Set<Long> getAllChangedArticleIds() {
+        try {
+            Set<Object> members = redisTemplate.opsForSet().members(BATCH_ARTICLE_IDS_KEY);
+            if (members != null) {
+                return members.stream()
+                    .map(object -> Long.valueOf(object.toString()))
+                    .collect(Collectors.toSet());
+            }
+        } catch (Exception e) {
+            log.error("[Redis fallback] getAllChangedArticleIds failed");
+        }
+        return Collections.emptySet();
+    }
+
+    public Set<Object> getAllLikeRequests(Long articleId) {
+        return getSet(ARTICLE_LIKE_KEY + articleId, "getAllLikeRequests");
+    }
+
+    public Set<Object> getAllUnlikeRequests(Long articleId) {
+        return getSet(ARTICLE_UNLIKE_KEY + articleId, "getAllUnlikeRequests");
+    }
+
+    private Set<Object> getSet(String key, String logText) {
+        try {
+            Set<Object> members = redisTemplate.opsForSet().members(key);
+            if (members != null) {
+                return members;
+            }
+        } catch (Exception e) {
+            log.error("[Redis fallback] {} failed - key = {}", logText, key, e);
+        }
+        return Collections.emptySet();
+    }
+
+    /**
+     * Batch 처리용 - 삭제
+     * DB 트랜잭션 성공 후 Redis 데이터를 삭제하는 메서드
+     **/
+    public void clearChangedArticleId(Long articleId) {
+        redisTemplate.opsForSet().remove(BATCH_ARTICLE_IDS_KEY, articleId);
+    }
+
+    public void clearLikeRequests(Long articleId) {
+        redisTemplate.delete(ARTICLE_LIKE_KEY + articleId);
+    }
+
+    public void clearUnlikeRequests(Long articleId) {
+        redisTemplate.delete(ARTICLE_UNLIKE_KEY + articleId);
+    }
+
+    /**
      * 게시글별 좋아요 수 캐시용
      * 좋아요/좋아요 취소 요청 시 최종 좋아요 수를 계산하기 위한 IO를 줄이기 위함
      * */

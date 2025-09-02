@@ -9,7 +9,8 @@ import com.grepp.teamnotfound.app.model.report.code.ReportType;
 import com.grepp.teamnotfound.app.model.report.dto.ReportDetailDto;
 import com.grepp.teamnotfound.app.model.report.entity.Report;
 import com.grepp.teamnotfound.app.model.report.repository.ReportRepository;
-import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+//import com.grepp.teamnotfound.app.model.user.code.UserStateResponse;
+import com.grepp.teamnotfound.app.model.user.code.UserStatus;
 import com.grepp.teamnotfound.app.model.user.entity.User;
 import com.grepp.teamnotfound.infra.error.exception.BusinessException;
 import com.grepp.teamnotfound.infra.error.exception.code.BoardErrorCode;
@@ -108,8 +109,8 @@ class ReportServiceTest {
         assertThat(result.getBoardType()).isEqualTo(board.getName());
         assertThat(result.getReporterNickname()).isEqualTo(reporter.getNickname());
         assertThat(result.getReportedNickname()).isEqualTo(reported.getNickname());
-        assertThat(result.getReportedState()).isEqualTo(reported.getUserState());
-        assertThat(result.getReportedState()).isEqualTo(UserStateResponse.ACTIVE);
+        assertThat(result.getReportedState()).isEqualTo(reported.getStatus());
+        assertThat(result.getReportedState()).isEqualTo(UserStatus.ACTIVE);
 
         // replyRepository의 메소드는 호출되지 않았는지
         verify(replyRepository, never()).findArticleWithBoardByReplyId(anyLong());
@@ -247,6 +248,6 @@ class ReportServiceTest {
         ReportDetailDto result = reportService.getReportDetail(reportId);
 
         // then
-        assertThat(result.getReportedState()).isEqualTo(UserStateResponse.LEAVE);
+        assertThat(result.getReportedState()).isEqualTo(UserStatus.LEAVE);
     }
 }
