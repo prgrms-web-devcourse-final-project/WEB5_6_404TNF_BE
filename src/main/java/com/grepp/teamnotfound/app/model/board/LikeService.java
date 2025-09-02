@@ -29,8 +29,8 @@ public class LikeService {
     // articleId 별로 좋아요 처리 트랜잭션을 분리
     @Transactional
     public void syncOneArticleLikes(Long articleId) {
-        Set<Object> likeRequests = redisLikeService.getAllLikeRequestsAndClear(articleId);
-        Set<Object> unlikeRequests = redisLikeService.getAllUnlikeRequestsAndClear(articleId);
+        Set<Object> likeRequests = redisLikeService.getAllLikeRequests(articleId);
+        Set<Object> unlikeRequests = redisLikeService.getAllUnlikeRequests(articleId);
 
         // 요청 송신자 userId 리스트
         List<Long> usersToLike = likeRequests.stream()
@@ -82,5 +82,10 @@ public class LikeService {
         // DB 에 최종 반영된 좋아요 수를 가져와 Redis 캐시를 업데이트하여 정합성 유지
         Integer finalDbLikeCount = articleLikeRepository.countByArticle_ArticleId(articleId);
         redisLikeService.setArticleLikesCount(articleId, finalDbLikeCount.longValue());
+
+        // 모든 DB 작업이 성공하면 Redis 데이터 삭제
+        redisLikeService.clearLikeRequests(articleId);
+        redisLikeService.clearUnlikeRequests(articleId);
+        redisLikeService.clearChangedArticleId(articleId);
     }
 }

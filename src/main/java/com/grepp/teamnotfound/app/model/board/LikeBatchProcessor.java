@@ -43,7 +43,7 @@ public class LikeBatchProcessor {
 
     // 좋아요 관련 요청을 DB에 반영
     public void syncLikesWithDB() {
-        Set<Long> changedArticleIds = redisLikeService.getAllChangedArticleIdsAndClear();
+        Set<Long> changedArticleIds = redisLikeService.getAllChangedArticleIds();
 
         if (changedArticleIds.isEmpty()) {
             log.info("No changed article found. Skipping batch processing.");
@@ -54,7 +54,7 @@ public class LikeBatchProcessor {
             try {
                 likeService.syncOneArticleLikes(articleId);
             } catch (Exception e) {
-                log.error("Failed to sync likes for articleId: {}", articleId);
+                log.error("Failed to sync likes for articleId: {}. Retrying on next batch.", articleId, e);
             }
         }
 
