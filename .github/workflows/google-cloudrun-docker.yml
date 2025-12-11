@@ -27,7 +27,6 @@
 #
 # 3. Change the values in the "env" block to match your values.
 
-
 name: 'Build and Deploy to Cloud Run'
 
 on:
